@@ -1,6 +1,6 @@
-package com.example.domain.follow.entity;
+package com.example.satto.domain.follow.entity;
 
-import com.example.domain.user.entity.User;
+import com.example.satto.domain.user.entity.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

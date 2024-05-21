@@ -1,6 +1,6 @@
 package com.example.satto.domain.course.entity;
 
-import com.example.satto.domain.user.entity.Users;
+import com.example.satto.domain.user.entity.User;
 import com.example.satto.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,7 +19,7 @@ public class Course extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "previous_lect_id")

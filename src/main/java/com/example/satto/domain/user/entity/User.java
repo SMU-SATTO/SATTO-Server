@@ -1,11 +1,6 @@
-package com.example.domain.user.entity;
+package com.example.satto.domain.user.entity;
 
-import com.example.domain.follow.entity.Follow;
 import jakarta.persistence.*;
-import org.springframework.data.relational.core.sql.Like;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class User {

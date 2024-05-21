@@ -10,6 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# yml
+*.yml
+
 # Package Files #
 *.jar
 *.war
