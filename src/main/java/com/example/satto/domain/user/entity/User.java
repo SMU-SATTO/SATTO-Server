@@ -1,6 +1,13 @@
 package com.example.satto.domain.user.entity;
 
+import com.example.satto.domain.course.entity.Course;
+import com.example.satto.domain.event.entity.PhotoContest;
+import com.example.satto.domain.event.entity.PhotoContestDislike;
+import com.example.satto.domain.event.entity.PhotoContestLike;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
@@ -44,20 +51,21 @@ public class User {
 //    @OneToMany(mappedBy = "userId")
 //    private List<Timetable> timetableList = new ArrayList<>();
 //
-//    // 이벤트_학교사진콘테스트
-//    @OneToOne(mappedBy = "userId")
-//    private List<Event> eventList = new ArrayList<>();
-//
-//    // 시간표 좋아요
-//    @OneToMany(mappedBy = "userId")
-//    private List<Like> dislikeList = new ArrayList<>();
-//
-//    // 시간표 싫어요
-//    @OneToMany(mappedBy = "userId")
-//    private List<Dislike> dislikeList = new ArrayList<>();
-//
-//    // 수강한 강의 목록
-//    @OneToMany(mappedBy = "userId")
-//    private List<Course> courseList = new ArrayList<>();
+
+    // 이벤트 학교사진콘테스트
+    @OneToOne(mappedBy = "user")
+    private PhotoContest photoContest;
+
+    // 시간표 좋아요
+    @OneToMany(mappedBy = "user")
+    private List<PhotoContestLike> likeList = new ArrayList<>();
+
+    // 시간표 싫어요
+    @OneToMany(mappedBy = "user")
+    private List<PhotoContestDislike> dislikeList = new ArrayList<>();
+
+    // 수강한 강의 목록
+    @OneToMany(mappedBy = "user")
+    private List<Course> courseList = new ArrayList<>();
 
 }
