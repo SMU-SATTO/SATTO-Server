@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/satto
+    username: ${Id}
+    password: ${Password}
+
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+
+  logging:
+    level:
+      org.hibernate.SQL: debug
+  server:
+    port:8000
+  jwt:
+    secret: asdf0aw8eufawe8u2jigjmb892jxksd0df80d8fg08hy08eg0wrkio0wr8t
+    token:
+      access-expiration-time: 3600000
+      refresh-expiration-time: 86400000
