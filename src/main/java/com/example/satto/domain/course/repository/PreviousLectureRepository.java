@@ -8,4 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PreviousLectureRepository extends JpaRepository<PreviousLecture, Long> {
+    List<PreviousLecture> findAllByCourseList(List<Course> courseList);
 }

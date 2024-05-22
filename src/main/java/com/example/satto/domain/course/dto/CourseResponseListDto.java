@@ -1,8 +1,11 @@
 package com.example.satto.domain.course.dto;
 
+import lombok.Builder;
+
 import java.util.List;
 
-public record CourseListResponseDto(
+@Builder
+public record CourseResponseListDto(
         List<CourseResponseDto> courseResponseDtoList
 ) {
 }

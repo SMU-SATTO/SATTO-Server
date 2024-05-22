@@ -1,5 +1,8 @@
 package com.example.satto.domain.course.dto;
 
+import lombok.Builder;
+
+@Builder
 public record GraduationResponseDto(
         int advanceMajor,
         int selectableMajor,
