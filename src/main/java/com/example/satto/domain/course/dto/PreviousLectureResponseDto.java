@@ -1,11 +1,9 @@
 package com.example.satto.domain.course.dto;
 
 import lombok.Builder;
-import lombok.Getter;
 
 @Builder
-@Getter
-public record PreviousLecturesResponseDto(
+public record PreviousLectureResponseDto(
         String cmpDiv,
         String name,
         String professor,
