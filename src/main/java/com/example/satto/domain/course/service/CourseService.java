@@ -1,5 +1,6 @@
 package com.example.satto.domain.course.service;
 
+import com.example.satto.domain.course.dto.CourseRequestDto;
 import com.example.satto.domain.course.dto.CourseRequestListDto;
 import com.example.satto.domain.course.entity.Course;
 import com.example.satto.domain.course.entity.PreviousLecture;
@@ -31,30 +32,45 @@ public class CourseService {
     }
 
     @Transactional(readOnly = true)
-    public List<PreviousLecture> getPreviousLectureList(String semesterYear) {
+    public List<PreviousLecture> getPreviousLectureListBySemesterYear(String semesterYear) {
         return previousLectureRepository.findAllBySemesterYear(semesterYear);
     }
 
+    //사용자 수강 목록 조회
     @Transactional(readOnly = true)
-    public List<PreviousLecture> getPreviousLectureList(Long userId) {
-        User user = userRepository.findById(userId)
+    public List<PreviousLecture> getCourse(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._NOT_FOUND_USER));
         List<Course> courseList = courseRepository.findAllByUser(user);
         return previousLectureRepository.findAllByCourseList(courseList);
     }
 
-    public List<PreviousLecture> updateCourse(Long userId, CourseRequestListDto courseRequestListDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._NOT_FOUND_USER));
-        List<Course> courseList = courseRepository.findAllByUser(user);
-        List<PreviousLecture> previousLectureList = previousLectureRepository.findAllByCourseList(courseList);
-        return previousLectureList;
+    //사용자 수강 목록 수정(추가)
+    public void updateCourse(String email, CourseRequestListDto courseRequestListDto) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
+        for (CourseRequestDto courseRequestDto : courseRequestListDto.courseRequestDtoList()) {
+            PreviousLecture previousLecture = previousLectureRepository.findBySemesterYearAndCode(courseRequestDto.semesterYear(), courseRequestDto.code())
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_PREVIOUS_LECTURE));
+            Course course = Course.builder()
+                    .user(user)
+                    .previousLecture(previousLecture)
+                    .build();
+            courseRepository.save(course);
+        }
     }
 
-    public void deleteCourse(Long userId, CourseRequestListDto courseRequestListDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._NOT_FOUND_USER));
-        List<Course> courseList = courseRepository.findAllByUser(user);
 
+    //사용자 수강 목록 수정(삭제)
+    public void deleteCourse(String email, CourseRequestListDto courseRequestListDto) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
+        for (CourseRequestDto courseRequestDto : courseRequestListDto.courseRequestDtoList()) {
+            PreviousLecture previousLecture = previousLectureRepository.findBySemesterYearAndCode(courseRequestDto.semesterYear(), courseRequestDto.code())
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_PREVIOUS_LECTURE));
+            Course course = courseRepository.findByUserAndPreviousLecture(user, previousLecture)
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_COURSE));
+            courseRepository.delete(course);
+        }
     }
 }

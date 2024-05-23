@@ -38,7 +38,7 @@ public class CourseController {
     @GetMapping("")
     public BaseResponse<PreviousLectureListResponseDto> getPreviousLectureList(
             @RequestParam("semester-year") String semesterYear) {
-        List<PreviousLecture> previousLectureList = courseService.getPreviousLectureList(semesterYear);
+        List<PreviousLecture> previousLectureList = courseService.getPreviousLectureListBySemesterYear(semesterYear);
         return BaseResponse.onSuccess(PreviousLecturesConverter
                 .toPreviousLecturesResponseDtoList(previousLectureList));
 
@@ -46,41 +46,40 @@ public class CourseController {
 
     @Operation(method = "GET", summary = "사용자 수강 목록 조회",
             description = "사용자가 입력한 수강 목록을 조회합니다. 해당 사용자의 수강 목록에 속한 강의 정보 리스트를 전송합니다.")
-    @GetMapping("/{courseId}")
+    @GetMapping("/{email}")
     public BaseResponse<CourseResponseListDto> getCourseList(
-            @PathVariable Long courseId) {
-        List<PreviousLecture> previousLectureList = courseService.getPreviousLectureList(courseId);
+            @PathVariable String email) {
+        List<PreviousLecture> previousLectureList = courseService.getCourse(email);
         return BaseResponse.onSuccess(CourseConverter
                 .toCourseResponseDtoList(previousLectureList));
     }
 
     @Operation(method = "POST", summary = "사용자 수강 목록 추가",
             description = "사용자의 수강 목록에 요청된 강의를 추가합니다.")
-    @PostMapping("/{courseId}")
+    @PostMapping("/{email}")
     public BaseResponse<?> updateCourse(
-            @PathVariable Long courseId,
+            @PathVariable String email,
             @RequestBody CourseRequestListDto courseRequestListDto) {
-        List<PreviousLecture> previousLectureList = courseService.updateCourse(courseId, courseRequestListDto);
-        return BaseResponse.onSuccess(CourseConverter
-                .toCourseResponseDtoList(previousLectureList));
+        courseService.updateCourse(email, courseRequestListDto);
+        return BaseResponse.onSuccess("수정 되었습니다.");
     }
 
     @Operation(method = "DELETE", summary = "사용자 수강 목록 삭제",
             description = "사용자의 수강 목록에서 요청된 강의를 삭제합니다.")
-    @DeleteMapping("/{courseId}")
+    @DeleteMapping("/{email}")
     public BaseResponse<?> deleteCourse(
-            @PathVariable Long courseId,
+            @PathVariable String email,
             @RequestBody CourseRequestListDto courseRequestListDto) {
-        courseService.deleteCourse(courseId, courseRequestListDto);
+        courseService.deleteCourse(email, courseRequestListDto);
         return BaseResponse.onSuccess("삭제 되었습니다.");
     }
 
     @Operation(method = "GET", summary = "사용자 졸업 요건 충족도 조회",
             description = "사용자의 수강 목록을 기반으로 졸업 요건 충족 학점 정보를 전송합니다.")
-    @GetMapping("/{courseId}/graduation")
+    @GetMapping("/{email}/graduation")
     public BaseResponse<GraduationResponseDto> getGraduation(
-            @PathVariable Long courseId) {
-        List<PreviousLecture> previousLectureList = courseService.getPreviousLectureList(courseId);
+            @PathVariable String email) {
+        List<PreviousLecture> previousLectureList = courseService.getCourse(email);
         return BaseResponse.onSuccess(CourseConverter
                 .toGraduationResponseDto(previousLectureList));
     }

@@ -19,6 +19,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // Course 에러
     _NOT_FOUND_PREVIOUS_LECTURE(HttpStatus.NOT_FOUND, "COURSE400", "요청한 정보에 해당하는 강의가 존재하지 않습니다."),
     _NOT_FOUND_PREVIOUS_LECTURE_BY_SEMESTER_YEAR(HttpStatus.NOT_FOUND, "COURSE400", "요청한 년도학기에 해당하는 강의가 존재하지 않습니다."),
+    _NOT_FOUND_COURSE(HttpStatus.NOT_FOUND, "COURSE400", "강의가 사용자 강의 목록에 존재하지 않습니다."),
 
     // User 에러
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER400", "사용자가 존재하지 않습니다.");
