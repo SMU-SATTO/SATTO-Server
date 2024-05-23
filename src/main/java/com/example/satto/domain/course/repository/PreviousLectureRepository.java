@@ -9,4 +9,8 @@ import java.util.Optional;
 
 public interface PreviousLectureRepository extends JpaRepository<PreviousLecture, Long> {
     List<PreviousLecture> findAllByCourseList(List<Course> courseList);
+
+    Optional<PreviousLecture> findBySemesterYearAndCode(String semesterYear, String code);
+
+    List<PreviousLecture> findAllBySemesterYear(String semesterYear);
 }
