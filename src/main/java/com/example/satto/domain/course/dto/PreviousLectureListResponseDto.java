@@ -6,6 +6,6 @@ import java.util.List;
 
 @Builder
 public record PreviousLectureListResponseDto(
-        List<PreviousLecturesResponseDto> previousLecturesResponseDtoList
+        List<PreviousLectureResponseDto> previousLectureResponseDtoList
 ) {
 }

@@ -25,7 +25,8 @@ public class Course extends BaseEntity {
     @JoinColumn(name = "previous_lect_id")
     private PreviousLecture previousLecture;
 
-    public void updateCourse(){
-
+    public void update(User user, PreviousLecture previousLecture) {
+        this.user = user;
+        this.previousLecture = previousLecture;
     }
 }
