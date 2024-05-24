@@ -1,51 +1,25 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/satto1
-    username: root
-    password: pw123
+    url: jdbc:mysql://localhost:3306/satto
+    username: ${Id}
+    password: ${Password}
 
   jpa:
+    open-in-view: true
     hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        show_sql: true
-  #        format_sql: true
+      ddl-auto: update
+    show-sql: true
 
+
+
+  logging:
+    level:
+      org.hibernate.SQL: debug
+  server:
+    port:8000
   jwt:
-    secret-key: 5107e1d1ebdcc823319ddef21fa07a176ba60b9bdbe48837d4118d081e7dd69b8cd69f16e8f7f13f826f359be36f2286421583c52b707b7c3d56e30f3fba3836
-    expiration: 86400000
-    refresh-token:
-      expiration: 604800000
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: rhythmpal0219@gmail.com
-    password: sobplfojwebapuok
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-
-#cloud:
-#  aws:
-#    credentials:
-#      accessKey:
-#      secret-key:
-#    s3:
-#      bucket:
-#    region:
-#      static: ap-northeast-2
-#    stack:
-#      auto: true
-
-logging:
-  level:
-    org.hibernate.sql: debug
-
-
+    secret: asdf0aw8eufawe8u2jigjmb892jxksd0df80d8fg08hy08eg0wrkio0wr8t
+    token:
+      access-expiration-time: 3600000
+      refresh-expiration-time: 86400000
