@@ -1,6 +1,6 @@
 package com.example.satto.domain.event.entity;
 
-import com.example.satto.domain.user.entity.User;
+import com.example.satto.domain.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +16,7 @@ public class PhotoContestDislike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "photo_contest_id")

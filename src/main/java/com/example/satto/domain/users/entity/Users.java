@@ -1,14 +1,16 @@
 package com.example.satto.domain.users.entity;
 
+import com.example.satto.domain.course.entity.Course;
+import com.example.satto.domain.event.entity.PhotoContest;
+import com.example.satto.domain.event.entity.PhotoContestDislike;
+import com.example.satto.domain.event.entity.PhotoContestLike;
 import com.example.satto.domain.follow.entity.Follow;
 import com.example.satto.domain.users.Role;
 import com.example.satto.global.common.BaseEntity;
 import com.example.satto.token.Token;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static net.sf.jsqlparser.util.validation.metadata.NamedObject.role;
 
 @Data
 @Builder
@@ -74,22 +74,22 @@ public class Users extends BaseEntity implements UserDetails {
 //    // 시간표
 //    @OneToMany(mappedBy = "userId")
 //    private List<Timetable> timetableList = new ArrayList<>();
-//
-//    // 이벤트_학교사진콘테스트
-//    @OneToOne(mappedBy = "userId")
-//    private List<Event> eventList = new ArrayList<>();
-//
-//    // 시간표 좋아요
-//    @OneToMany(mappedBy = "userId")
-//    private List<Like> dislikeList = new ArrayList<>();
-//
-//    // 시간표 싫어요
-//    @OneToMany(mappedBy = "userId")
-//    private List<Dislike> dislikeList = new ArrayList<>();
-//
-//    // 수강한 강의 목록
-//    @OneToMany(mappedBy = "userId")
-//    private List<Course> courseList = new ArrayList<>();
+
+    // 이벤트 학교사진콘테스트
+    @OneToOne(mappedBy = "user")
+    private PhotoContest photoContest;
+
+    // 시간표 좋아요
+    @OneToMany(mappedBy = "user")
+    private List<PhotoContestLike> likeList = new ArrayList<>();
+
+    // 시간표 싫어요
+    @OneToMany(mappedBy = "user")
+    private List<PhotoContestDislike> dislikeList = new ArrayList<>();
+
+    // 수강한 강의 목록
+    @OneToMany(mappedBy = "user")
+    private List<Course> courseList = new ArrayList<>();
 
     // Token
     @JsonIgnore

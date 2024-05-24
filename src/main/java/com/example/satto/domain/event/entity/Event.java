@@ -1,6 +1,5 @@
 package com.example.satto.domain.event.entity;
 
-import com.example.satto.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
