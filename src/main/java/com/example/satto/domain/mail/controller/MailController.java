@@ -1,9 +1,9 @@
-package com.example.satto.mail.controller;
+package com.example.satto.domain.mail.controller;
 
+import com.example.satto.domain.mail.dto.EmailRequestDTO;
+import com.example.satto.domain.mail.service.EmailService;
+import com.example.satto.domain.mail.service.EmailServiceImpl;
 import com.example.satto.global.common.BaseResponse;
-import com.example.satto.mail.dto.EmailRequestDTO;
-import com.example.satto.mail.service.EmailService;
-import com.example.satto.mail.service.EmailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
