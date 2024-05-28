@@ -5,6 +5,8 @@ import com.example.satto.domain.course.converter.PreviousLecturesConverter;
 import com.example.satto.domain.course.dto.*;
 import com.example.satto.domain.course.entity.PreviousLecture;
 import com.example.satto.domain.course.service.CourseService;
+import com.example.satto.domain.users.entity.Users;
+import com.example.satto.global.annotation.AuthUser;
 import com.example.satto.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,10 +48,10 @@ public class CourseController {
 
     @Operation(method = "GET", summary = "사용자 수강 목록 조회",
             description = "사용자가 입력한 수강 목록을 조회합니다. 해당 사용자의 수강 목록에 속한 강의 정보 리스트를 전송합니다.")
-    @GetMapping("/{email}")
+    @GetMapping("")
     public BaseResponse<CourseResponseListDto> getCourseList(
-            @PathVariable String email) {
-        List<PreviousLecture> previousLectureList = courseService.getCourse(email);
+            @AuthUser Users user) {
+        List<PreviousLecture> previousLectureList = courseService.getCourse(user);
         return BaseResponse.onSuccess(CourseConverter
                 .toCourseResponseDtoList(previousLectureList));
     }
@@ -76,10 +78,10 @@ public class CourseController {
 
     @Operation(method = "GET", summary = "사용자 졸업 요건 충족도 조회",
             description = "사용자의 수강 목록을 기반으로 졸업 요건 충족 학점 정보를 전송합니다.")
-    @GetMapping("/{email}/graduation")
+    @GetMapping("/graduation")
     public BaseResponse<GraduationResponseDto> getGraduation(
-            @PathVariable String email) {
-        List<PreviousLecture> previousLectureList = courseService.getCourse(email);
+            @AuthUser Users user) {
+        List<PreviousLecture> previousLectureList = courseService.getCourse(user);
         return BaseResponse.onSuccess(CourseConverter
                 .toGraduationResponseDto(previousLectureList));
     }

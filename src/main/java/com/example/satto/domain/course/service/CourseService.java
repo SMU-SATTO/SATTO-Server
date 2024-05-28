@@ -38,9 +38,7 @@ public class CourseService {
 
     //사용자 수강 목록 조회
     @Transactional(readOnly = true)
-    public List<PreviousLecture> getCourse(String email) {
-        Users user = userRepository.findByEmail(email)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._NOT_FOUND_USER));
+    public List<PreviousLecture> getCourse(Users user) {
         List<Course> courseList = courseRepository.findAllByUser(user);
         return previousLectureRepository.findAllByCourseList(courseList);
     }

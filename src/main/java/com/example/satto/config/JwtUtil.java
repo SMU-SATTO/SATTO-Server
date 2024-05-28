@@ -123,13 +123,6 @@ public class JwtUtil {
                 .token(refreshToken)
                 .build()
         );
-        // Redis에 Refresh Token 저장
-//        redisUtil.save(
-//                customUserDetails.getUsername(),
-//                refreshToken,
-//                refreshExpMs,
-//                TimeUnit.MILLISECONDS
-//        );
 
         return refreshToken;
     }
@@ -170,27 +163,10 @@ public class JwtUtil {
     }
 
     public void isRefreshToken(String refreshToken) {
-        Long id = Long.valueOf(getEmail(refreshToken));
-
-//        Token token = tokenRepository.findById(id).orElseThrow(
-//                () -> new IllegalArgumentException("Refresh Token 이 존재하지 않습니다."));
-
+        Token token = tokenRepository.findByToken(refreshToken).orElseThrow(
+                () -> new IllegalArgumentException("Refresh Token 이 존재하지 않습니다."));
         validateToken(refreshToken);
     }
-
-//    public void isRefreshToken(String refreshToken) {
-//        String username = getEmail(refreshToken);
-//
-//        //redis 확인
-//        String redisRefreshToken = redisUtil.get(username).toString();
-//        if (!refreshToken.equals(redisRefreshToken)) {
-//            log.warn("[*] case : Invalid refreshToken");
-//            throw new NoSuchElementException("Redis에 " + username + "에 해당하는 키가 없습니다.");
-//        }
-//
-//        // refreshToken validate
-//        validateToken(refreshToken);
-//    }
 
     // 리프레시 토큰의 유효성을 검사
     public void validateToken(String token) {
@@ -198,7 +174,7 @@ public class JwtUtil {
         try {
             // 구문 분석 시스템의 시계가 JWT를 생성한 시스템의 시계 오차 고려
             // 약 3분 허용.
-            long seconds = 3 *60;
+            long seconds = 3 * 60;
             boolean isExpired = Jwts
                     .parser()
                     .clockSkewSeconds(seconds)
