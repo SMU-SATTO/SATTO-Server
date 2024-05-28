@@ -35,21 +35,16 @@ public class JwtUtil {
             @Value("${spring.jwt.token.access-expiration-time}") Long access,
             @Value("${spring.jwt.token.refresh-expiration-time}") Long refresh,
             TokenRepository tokenRepo
-            //RedisUtil redis
     ) {
-        //private final RedisUtil redisUtil;
-
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
         accessExpMs = access;
         refreshExpMs = refresh;
         tokenRepository = tokenRepo;
-        //redisUtil = redis;
     }
 
     // JWT 토큰을 입력으로 받아 토큰의 subject 로부터 사용자 Email 추출하는 메서드
     public String getEmail(String token) throws SignatureException {
-        log.info("[ JwtUtil ] 토큰에서 이메일을 추출합니다.");
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
@@ -60,7 +55,6 @@ public class JwtUtil {
 
     // JWT 토큰을 입력으로 받아 토큰의 claim 에서 사용자 권한을 추출하는 메서드
     public String getRole(String token) throws SignatureException{
-        log.info("[ JwtUtil ] 토큰에서 권한을 추출합니다.");
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
@@ -71,7 +65,6 @@ public class JwtUtil {
 
     // JWT 토큰에서 만료기간 추출하는 메서드
     public long getExpTime(String token) throws SignatureException {
-        log.info("[ JwtUtil ] 토큰에서 만료 기간을 추출합니다.");
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
@@ -84,7 +77,6 @@ public class JwtUtil {
     // Token 발급하는 메서드
     public String tokenProvider(CustomUserDetails customUserDetails, Instant expiration) {
 
-        log.info("[ JwtUtil ] 토큰을 새로 생성합니다.");
         //현재 시간
         Instant issuedAt = Instant.now();
 
@@ -138,7 +130,6 @@ public class JwtUtil {
                 null,
                 getRole(refreshToken)
         );
-        log.info("[ JwtUtil ] 새로운 토큰을 재발급 합니다.");
 
         // 재발급
         return new JwtDto(
@@ -149,15 +140,11 @@ public class JwtUtil {
 
     // HTTP 요청의 'Authorization' 헤더에서 JWT 액세스 토큰을 검색
     public String resolveAccessToken(HttpServletRequest request) {
-        log.info("[ JwtUtil ] 헤더에서 토큰을 추출합니다.");
         String tokenFromHeader = request.getHeader("Authorization");
 
         if (tokenFromHeader == null || !tokenFromHeader.startsWith("Bearer ")) {
-            log.warn("[ JwtUtil ] Request Header 에 토큰이 존재하지 않습니다.");
             return null;
         }
-
-        log.info("[ JwtUtil ] 헤더에 토큰이 존재합니다.");
 
         return tokenFromHeader.split(" ")[1]; //Bearer 와 분리
     }
@@ -170,10 +157,7 @@ public class JwtUtil {
 
     // 리프레시 토큰의 유효성을 검사
     public void validateToken(String token) {
-        log.info("[ JwtUtil ] 토큰의 유효성을 검증합니다.");
         try {
-            // 구문 분석 시스템의 시계가 JWT를 생성한 시스템의 시계 오차 고려
-            // 약 3분 허용.
             long seconds = 3 * 60;
             boolean isExpired = Jwts
                     .parser()
@@ -184,15 +168,10 @@ public class JwtUtil {
                     .getPayload()
                     .getExpiration()
                     .before(new Date());
-            if (isExpired) {
-                log.info("만료된 JWT 토큰입니다.");
-            }
 
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            //원하는 Exception throw
             throw new SecurityException("잘못된 토큰입니다.");
         } catch (ExpiredJwtException e) {
-            //원하는 Exception throw
             throw new ExpiredJwtException(null, null, "만료된 JWT 토큰입니다.");
         }
     }
