@@ -1,4 +1,4 @@
-package com.example.satto.mail.dto;
+package com.example.satto.domain.mail.dto;
 
 import lombok.Getter;
 

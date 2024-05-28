@@ -1,4 +1,4 @@
-package com.example.satto.mail.domain;
+package com.example.satto.domain.mail.domain;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.example.satto.mail.service;
+package com.example.satto.domain.mail.service;
 
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
