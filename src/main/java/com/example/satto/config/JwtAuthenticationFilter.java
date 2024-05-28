@@ -1,68 +1,78 @@
 package com.example.satto.config;
+import com.example.satto.global.common.code.status.ErrorStatus;
+import com.example.satto.global.common.exception.GeneralException;
+import com.example.satto.userDetails.CustomUserDetails;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.satto.token.TokenRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
-@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository;
+    private final JwtUtil jwtUtil;
+    //private final RedisUtil redisUtil;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
+        logger.info("[*] Jwt Filter");
 
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
+        try {
+            String accessToken = jwtUtil.resolveAccessToken(request);
 
-        if (request.getServletPath().contains("/api/v1/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (authHeader == null || !authHeader.startsWith("Bearer")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUserName(jwt);
-
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            var isTokenValid = tokenRepository.findByToken(jwt)
-                    .map(t -> !t.isExpired() && !t.isRevoked())
-                    .orElse(false);
-
-            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            // accessToken 없이 접근할 경우
+            if (accessToken == null) {
+                filterChain.doFilter(request, response);
+                return;
             }
+
+            // logout 처리된 accessToken
+//            if (redisUtil.get(accessToken) != null && redisUtil.get(accessToken).equals("logout")) {
+//                logger.info("[*] Logout accessToken");
+//                filterChain.doFilter(request, response);
+//                return;
+//            }
+
+            logger.info("[*] Authorization with Token");
+            authenticateAccessToken(accessToken);
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e) {
+            logger.warn("[*] case : accessToken Expired");
+            throw new GeneralException(ErrorStatus.TOKEN_EXPIRED);
         }
-        filterChain.doFilter(request, response);
+    }
+
+    private void authenticateAccessToken(String accessToken) {
+        CustomUserDetails userDetails = new CustomUserDetails(
+                jwtUtil.getId(accessToken),
+                jwtUtil.getEmail(accessToken),
+                null,
+                jwtUtil.getRole(accessToken)
+        );
+
+        logger.info("[*] Authority Registration");
+
+        // 스프링 시큐리티 인증 토큰 생성
+        Authentication authToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities());
+
+        // 컨텍스트 홀더에 저장
+        SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 }

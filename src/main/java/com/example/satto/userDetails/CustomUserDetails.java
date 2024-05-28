@@ -9,17 +9,20 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
+    private final Long id;
     private final String email;
     private final String password;
     private final String role;
 
-    public CustomUserDetails(String email, String password, String role) {
+    public CustomUserDetails(Long id, String email, String password, String role) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
     public CustomUserDetails(Users user) {
+        this.id = user.getUserId();
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.role = String.valueOf(user.getRole());

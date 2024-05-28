@@ -1,5 +1,7 @@
 package com.example.satto.config;
 
+import com.example.satto.global.common.code.status.ErrorStatus;
+import com.example.satto.global.common.exception.GeneralException;
 import com.example.satto.token.Token;
 import com.example.satto.token.TokenRepository;
 import com.example.satto.userDetails.CustomUserDetails;
@@ -43,14 +45,13 @@ public class JwtUtil {
         tokenRepository = tokenRepo;
     }
 
+    public Long getId(String token) {
+        return Long.parseLong(getClaims(token).getSubject());
+    }
+
     // JWT 토큰을 입력으로 받아 토큰의 subject 로부터 사용자 Email 추출하는 메서드
-    public String getEmail(String token) throws SignatureException {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+    public String getEmail(String token) {
+        return getClaims(token).get("email", String.class);
     }
 
     // JWT 토큰을 입력으로 받아 토큰의 claim 에서 사용자 권한을 추출하는 메서드
@@ -121,21 +122,35 @@ public class JwtUtil {
 
     // 제공된 리프레시 토큰을 기반으로 JwtDto 쌍을 다시 발급
     public JwtDto reissueToken(String refreshToken) throws SignatureException {
-        //Refresh Token 이 유효한지 검사
-        validateToken(refreshToken);
+        try {
+            validateToken(refreshToken);
+            log.info("[*] Valid RefreshToken");
 
-        // refreshToken 에서 user 정보를 가져와서 새로운 토큰을 발급 (발급 시간, 유효 시간(reset)만 새로 적용)
-        CustomUserDetails userDetails = new CustomUserDetails(
-                getEmail(refreshToken),
-                null,
-                getRole(refreshToken)
-        );
+            CustomUserDetails tempCustomUserDetails = new CustomUserDetails(
+                    getId(refreshToken),
+                    getEmail(refreshToken),
+                    null,
+                    getRole(refreshToken)
+            );
 
-        // 재발급
-        return new JwtDto(
-                createJwtAccessToken(userDetails),
-                createJwtRefreshToken(userDetails)
-        );
+            return new JwtDto(
+                    createJwtAccessToken(tempCustomUserDetails),
+                    createJwtRefreshToken(tempCustomUserDetails)
+            );
+        } catch (IllegalArgumentException iae) {
+            throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        } catch (ExpiredJwtException eje) {
+            throw new GeneralException(ErrorStatus.TOKEN_EXPIRED);
+        }
+    }
+    private Claims getClaims(String token) {
+        try {
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+        } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
+            throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        } catch (SignatureException e) {
+            throw new GeneralException(ErrorStatus.TOKEN_SIGNATURE_ERROR);
+        }
     }
 
     // HTTP 요청의 'Authorization' 헤더에서 JWT 액세스 토큰을 검색
@@ -147,12 +162,6 @@ public class JwtUtil {
         }
 
         return tokenFromHeader.split(" ")[1]; //Bearer 와 분리
-    }
-
-    public void isRefreshToken(String refreshToken) {
-        Token token = tokenRepository.findByToken(refreshToken).orElseThrow(
-                () -> new IllegalArgumentException("Refresh Token 이 존재하지 않습니다."));
-        validateToken(refreshToken);
     }
 
     // 리프레시 토큰의 유효성을 검사
