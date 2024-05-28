@@ -21,7 +21,6 @@ import java.util.List;
 @Transactional
 public class CourseService {
 
-    private final UsersRepository userRepository;
     private final CourseRepository courseRepository;
     private final PreviousLectureRepository previousLectureRepository;
 
@@ -44,9 +43,7 @@ public class CourseService {
     }
 
     //사용자 수강 목록 수정(추가)
-    public void updateCourse(String email, CourseRequestListDto courseRequestListDto) {
-        Users user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
+    public void updateCourse(Users user, CourseRequestListDto courseRequestListDto) {
         for (CourseRequestDto courseRequestDto : courseRequestListDto.courseRequestDtoList()) {
             PreviousLecture previousLecture = previousLectureRepository.findBySemesterYearAndCode(courseRequestDto.semesterYear(), courseRequestDto.code())
                     .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_PREVIOUS_LECTURE));
@@ -58,11 +55,8 @@ public class CourseService {
         }
     }
 
-
     //사용자 수강 목록 수정(삭제)
-    public void deleteCourse(String email, CourseRequestListDto courseRequestListDto) {
-        Users user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
+    public void deleteCourse(Users user, CourseRequestListDto courseRequestListDto) {
         for (CourseRequestDto courseRequestDto : courseRequestListDto.courseRequestDtoList()) {
             PreviousLecture previousLecture = previousLectureRepository.findBySemesterYearAndCode(courseRequestDto.semesterYear(), courseRequestDto.code())
                     .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_PREVIOUS_LECTURE));
