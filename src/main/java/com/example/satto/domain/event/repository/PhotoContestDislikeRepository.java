@@ -9,4 +9,6 @@ import java.util.Optional;
 
 public interface PhotoContestDislikeRepository extends JpaRepository<PhotoContestDislike, Long> {
     Optional<PhotoContestDislike> findByUserAndPhotoContest(Users user, PhotoContest photoContest);
+
+    Long countByPhotoContest(PhotoContest photoContest);
 }

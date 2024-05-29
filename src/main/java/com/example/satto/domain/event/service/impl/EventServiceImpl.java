@@ -2,6 +2,8 @@ package com.example.satto.domain.event.service.impl;
 
 import com.example.satto.domain.event.dto.EventCategoryListResponseDto;
 import com.example.satto.domain.event.dto.EventCategoryResponseDto;
+import com.example.satto.domain.event.dto.PhotoContestListResponseDto;
+import com.example.satto.domain.event.dto.PhotoContestResponseDto;
 import com.example.satto.domain.event.entity.Event;
 import com.example.satto.domain.event.entity.PhotoContest;
 import com.example.satto.domain.event.entity.PhotoContestDislike;
@@ -12,6 +14,7 @@ import com.example.satto.domain.event.repository.PhotoContestLikeRepository;
 import com.example.satto.domain.event.repository.PhotoContestRepository;
 import com.example.satto.domain.event.service.EventService;
 import com.example.satto.domain.users.entity.Users;
+import com.example.satto.domain.users.repository.UsersRepository;
 import com.example.satto.global.common.code.status.ErrorStatus;
 import com.example.satto.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +31,13 @@ import java.util.Optional;
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final UsersRepository userRepository;
     private final PhotoContestRepository photoContestRepository;
     private final PhotoContestLikeRepository photoContestLikeRepository;
     private final PhotoContestDislikeRepository photoContestDislikeRepository;
 
     // 이벤트 카테고리 목록 조회
+    @Transactional(readOnly = true)
     public EventCategoryListResponseDto getEventCategoryInfoList() {
         List<Event> eventList = eventRepository.findAll();
         List<EventCategoryResponseDto> eventCategoryResponseDtoList = new ArrayList<>();
@@ -48,6 +53,28 @@ public class EventServiceImpl implements EventService {
         }
         return EventCategoryListResponseDto.builder()
                 .eventCategoryResponseDtoList(eventCategoryResponseDtoList)
+                .build();
+    }
+
+    //사진 콘테스트 참여 목록 조회
+    @Transactional(readOnly = true)
+    public PhotoContestListResponseDto getPhotoContestParticipants() {
+        List<PhotoContest> photoContestList = photoContestRepository.findAll();
+        List<PhotoContestResponseDto> photoContestResponseDtoList = new ArrayList<>();
+        for (PhotoContest photoContest : photoContestList) {
+            Long likeCount = photoContestLikeRepository.countByPhotoContest(photoContest);
+            Long dislikeCount = photoContestDislikeRepository.countByPhotoContest(photoContest);
+            String name = userRepository.findByPhotoContest(photoContest).getName();
+            PhotoContestResponseDto.builder()
+                    .likeCount(likeCount)
+                    .dislikeCount(dislikeCount)
+                    .photo(photoContest.getPhotoImg())
+                    .createdAt(photoContest.getCreatedAt())
+                    .updatedAt(photoContest.getUpdatedAt())
+                    .build();
+        }
+        return PhotoContestListResponseDto.builder()
+                .photoContestResponseDtoList(photoContestResponseDtoList)
                 .build();
     }
 

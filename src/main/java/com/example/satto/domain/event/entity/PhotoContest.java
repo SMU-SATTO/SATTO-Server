@@ -1,6 +1,7 @@
 package com.example.satto.domain.event.entity;
 
 import com.example.satto.domain.users.entity.Users;
+import com.example.satto.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Getter
-public class PhotoContest {
+public class PhotoContest extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long photoContestId;
