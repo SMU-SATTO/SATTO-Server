@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -183,5 +184,23 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             throw new ExpiredJwtException(null, null, "만료된 JWT 토큰입니다.");
         }
+    }
+
+    //임시 방편용
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = getEmail(token);
+        return (username.equals(userDetails.getUsername())) && !validateTokenBool(token);
+    }
+    public boolean validateTokenBool(String token) {
+        long seconds = 3 * 60;
+        return Jwts
+                .parser()
+                .clockSkewSeconds(seconds)
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration()
+                .before(new Date());
     }
 }
