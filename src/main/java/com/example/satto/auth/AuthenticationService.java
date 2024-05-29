@@ -1,12 +1,12 @@
 package com.example.satto.auth;
 
-
-import com.example.satto.config.JwtService;
+import com.example.satto.config.JwtUtil;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.repository.UsersRepository;
 import com.example.satto.token.Token;
 import com.example.satto.token.TokenRepository;
 import com.example.satto.token.TokenType;
+import com.example.satto.userDetails.CustomUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,7 +26,7 @@ public class AuthenticationService {
     private final UsersRepository usersRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -55,8 +55,8 @@ public class AuthenticationService {
         );
         var user = usersRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        var jwtToken = jwtUtil.createJwtAccessToken(new CustomUserDetails(user));
+        var refreshToken = jwtUtil.createJwtAccessToken(new CustomUserDetails(user));
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
@@ -77,7 +77,7 @@ public class AuthenticationService {
     }
 
     private void revokeAllUserTokens(Users user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getEmail());
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
@@ -98,7 +98,7 @@ public class AuthenticationService {
             return;
         }
         refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUserName(refreshToken);
+        userEmail = jwtUtil.getEmail(refreshToken);
         System.out.println(userEmail);
         System.out.println("*********************************");
         if (userEmail != null) {
@@ -106,8 +106,8 @@ public class AuthenticationService {
             if (usersOptional.isPresent()) {
                 var user = usersOptional.get();
                 // 사용자가 존재하는 경우에 대한 처리
-                if (jwtService.isTokenValid(refreshToken, user)) {
-                    var accessToken = jwtService.generateToken(user);
+                if (jwtUtil.isTokenValid(refreshToken, user)) {
+                    var accessToken = jwtUtil.createJwtAccessToken(new CustomUserDetails(user));
                     revokeAllUserTokens(user);
                     saveUserToken(user, accessToken);
                     var authResponse = AuthenticationResponse.builder()
