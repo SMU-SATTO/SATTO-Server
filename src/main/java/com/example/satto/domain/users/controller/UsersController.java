@@ -1,10 +1,11 @@
 package com.example.satto.domain.users.controller;
 
+import com.example.satto.domain.s31.FileFolder;
+import com.example.satto.domain.s31.FileService;
 import com.example.satto.domain.users.converter.UsersConverter;
 import com.example.satto.domain.users.dto.UsersRequestDTO;
 import com.example.satto.domain.users.dto.UsersResponseDTO;
 import com.example.satto.domain.users.entity.Users;
-//import com.example.satto.domain.users.service.FileUploadService;
 import com.example.satto.domain.users.service.UsersService;
 import com.example.satto.global.common.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import java.io.IOException;
 public class UsersController {
 
     private final UsersService usersService;
-//    private final FileUploadService fileUploadService;
+    private final FileService fileService;
 
     // 아이디 중복 확인
     @GetMapping("/id/{email}")
@@ -45,12 +46,21 @@ public class UsersController {
 
     }
 
-//    @PostMapping("/id/{email}/profile/image")
-//    public BaseResponse<?> uploadProfileImg(@RequestParam("file") MultipartFile file, @PathVariable("email") String email) throws IOException {
-//        String url = fileUploadService.uploadProfileImg(file);
-//        usersService.uploadProfileImg(url, email);
-//        return BaseResponse.onSuccess("프로필 사진 등록 완료");
-//    }
+    // 프로필 이미지 등록
+    @PostMapping("/id/{email}/profile/image")
+    public BaseResponse<?> uploadProfileImg(@RequestParam("file") MultipartFile file, @PathVariable("email") String email) throws IOException {
+        String url = fileService.uploadFile(file, FileFolder.profile_Image);
+        usersService.uploadProfileImg(url, email);
+        return BaseResponse.onSuccess("프로필 사진 등록 완료");
+    }
+
+    // 이미지 삭제
+    @DeleteMapping("/id/{email}/profile/image")
+    public BaseResponse deleteProfileImg(@AuthenticationPrincipal Users user) {
+        String profileImg = user.getProfileImg();
+        fileService.deleteFile(profileImg);
+        return BaseResponse.onSuccess("삭제 완료");
+    }
 
 
     // 사용자 정보 조회
