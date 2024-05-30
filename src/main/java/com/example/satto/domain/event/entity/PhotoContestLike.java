@@ -21,4 +21,9 @@ public class PhotoContestLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "photo_contest_id")
     private PhotoContest photoContest;
+
+    public PhotoContestLike(Users user, PhotoContest photoContest) {
+        this.user = user;
+        this.photoContest = photoContest;
+    }
 }

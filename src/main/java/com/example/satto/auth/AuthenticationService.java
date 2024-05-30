@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -29,8 +31,9 @@ public class AuthenticationService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
+    // 회원가입
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = Users.builder()
+        Users user = Users.builder()
                 .profileImg(request.getProfileImg())
                 .name(request.getName())
                 .nickname(request.getNickname())
@@ -41,11 +44,13 @@ public class AuthenticationService {
                 .isPublic(request.getIsPublic())
                 .role(request.getRole())
                 .build();
-        var savedUser = usersRepository.save(user);
+        Users savedUser = usersRepository.save(user);
+        log.info("User registered with email: {}", savedUser.getEmail());
         return AuthenticationResponse.builder()
                 .build();
     }
 
+    // 로그인
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -53,10 +58,13 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = usersRepository.findByEmail(request.getEmail())
+        Users user = usersRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtUtil.createJwtAccessToken(new CustomUserDetails(user));
-        var refreshToken = jwtUtil.createJwtAccessToken(new CustomUserDetails(user));
+
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+        String jwtToken = jwtUtil.createJwtAccessToken(customUserDetails);
+        String refreshToken = jwtUtil.createJwtRefreshToken(customUserDetails);
+
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()

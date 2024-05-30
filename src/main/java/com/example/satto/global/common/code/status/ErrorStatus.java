@@ -24,6 +24,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // User 에러
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER400", "사용자가 존재하지 않습니다."),
 
+    // Event 에러
+    _NOT_FOUND_EVENT(HttpStatus.NOT_FOUND, "EVENT400", "해당 이벤트가 존재하지 않습니다."),
+
     // Security 에러
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "SEC4001", "잘못된 형식의 토큰입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SEC4010", "인증이 필요합니다."),
