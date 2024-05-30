@@ -60,9 +60,11 @@ public class AuthenticationService {
         );
         Users user = usersRepository.findByEmail(request.getEmail())
                 .orElseThrow();
+
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
         String jwtToken = jwtUtil.createJwtAccessToken(customUserDetails);
         String refreshToken = jwtUtil.createJwtRefreshToken(customUserDetails);
+
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
