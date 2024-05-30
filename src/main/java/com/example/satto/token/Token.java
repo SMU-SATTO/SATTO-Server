@@ -18,6 +18,8 @@ public class Token {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String email;
 
     @Column(unique = true)
