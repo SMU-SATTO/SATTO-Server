@@ -1,7 +1,7 @@
 package com.example.satto.domain.users.controller;
 
-import com.example.satto.domain.s31.FileFolder;
-import com.example.satto.domain.s31.FileService;
+import com.example.satto.s31.FileFolder;
+import com.example.satto.s31.FileService;
 import com.example.satto.domain.users.converter.UsersConverter;
 import com.example.satto.domain.users.dto.UsersRequestDTO;
 import com.example.satto.domain.users.dto.UsersResponseDTO;

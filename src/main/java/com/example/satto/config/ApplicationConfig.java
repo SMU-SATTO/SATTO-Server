@@ -1,6 +1,6 @@
 package com.example.satto.config;
 
-import com.example.satto.auditing.ApplicationAuditAware;
+import com.example.satto.config.security.auditing.ApplicationAuditAware;
 import com.example.satto.domain.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

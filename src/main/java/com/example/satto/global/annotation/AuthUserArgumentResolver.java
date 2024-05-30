@@ -1,6 +1,6 @@
 package com.example.satto.global.annotation;
 
-import com.example.satto.config.JwtUtil;
+import com.example.satto.util.JwtUtil;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.repository.UsersRepository;
 import com.example.satto.global.common.code.status.ErrorStatus;

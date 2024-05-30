@@ -57,6 +57,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
+// gradlew build task를 진행하면 builds/libs 폴더에 jar파일이 두 개 생성됨
+// ~SNAPSHOT.jar: 실행 가능한 jar
+// ~SNAPSHOT-plain.jar: 실행 불가능한 jar -> 실행에 필요한 의존성들이 포함되어 있지 않음
+// 따라서 gradle build시 -plain 제외한 하나의 jar파일만 나오게 하기 위해 추가하는 옵션
+jar {
+	enabled = false
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

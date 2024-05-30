@@ -7,7 +7,7 @@ import com.example.satto.domain.event.entity.PhotoContestLike;
 import com.example.satto.domain.follow.entity.Follow;
 import com.example.satto.domain.users.Role;
 import com.example.satto.global.common.BaseEntity;
-import com.example.satto.token.Token;
+import com.example.satto.config.security.token.Token;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
