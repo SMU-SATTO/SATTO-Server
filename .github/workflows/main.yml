@@ -9,19 +9,21 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: 17
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Create application.yml
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
-
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
@@ -52,4 +54,4 @@ jobs:
             sudo docker stop ${{ secrets.DOCKERHUB_IMAGENAME }}
             sudo docker rm ${{ secrets.DOCKERHUB_IMAGENAME }}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGENAME }}
-            sudo docker run -it -d -p 8080:8080 --name ${{ secrets.DOCKERHUB_IMAGENAME }} -e TZ=Asia/Seoul ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGENAME }}  
+            sudo docker run -it -d -p 8080:8080 --name ${{ secrets.DOCKERHUB_IMAGENAME }} -e TZ=Asia/Seoul ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGENAME }}
