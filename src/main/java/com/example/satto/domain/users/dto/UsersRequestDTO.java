@@ -15,7 +15,8 @@ public class UsersRequestDTO {
 
     @Getter
     public static class passwordDTO {
-        private String password;
+        private String firstPassword;
+        private String secondPassword;
     }
 
 }

@@ -19,10 +19,11 @@ public class AuthenticationController {
   private final AuthenticationService service;
 
   @PostMapping("/register") // 회원가입 후 토큰 발급
-  public BaseResponse<AuthenticationResponse> register(
+  public BaseResponse<String> register(
       @RequestBody RegisterRequest request
   ) {
-    return BaseResponse.onSuccess(service.register(request));
+    service.register(request);
+    return BaseResponse.onSuccess("회원가입 성공");
   }
 
   @PostMapping("/authenticate")  // 로그인시 토큰 재 발급

@@ -4,6 +4,7 @@ package com.example.satto.config.security.auth;
 import com.example.satto.config.security.JwtService;
 import com.example.satto.config.security.token.Token;
 import com.example.satto.config.security.token.TokenType;
+import com.example.satto.domain.users.Role;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.repository.UsersRepository;
 import com.example.satto.token.TokenRepository;
@@ -29,21 +30,19 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         var user = Users.builder()
-                .profileImg(request.getProfileImg())
-                .name(request.getName())
-                .nickname(request.getNickname())
-                .department(request.getDepartment())
+//                .profileImg(request.getProfileImg())
                 .studentId(request.getStudentId())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .nickname(request.getNickname())
+                .department(request.getDepartment())
                 .isPublic(request.getIsPublic())
-                .role(request.getRole())
+                .role(Role.USER)
                 .build();
         var savedUser = usersRepository.save(user);
-        return AuthenticationResponse.builder()
-                .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {

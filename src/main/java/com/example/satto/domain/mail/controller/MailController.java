@@ -23,8 +23,9 @@ public class MailController {
     // 인증번호 전송
     @PostMapping("/mail/check")
     public BaseResponse<Object> emailConfirm(@RequestBody EmailRequestDTO.EmailCheckRequest emailCheckRequest) throws Exception {
+        String email = emailCheckRequest.getStudentId()+"@sangmyung.kr";
         String confirm;
-        confirm = emailService.sendSimpleMessage(emailCheckRequest.getEmail());
+        confirm = emailService.sendSimpleMessage(email);
         if (confirm.isEmpty()) {
             return BaseResponse.onFailure("인증번호 전송 실패");
         } else {
