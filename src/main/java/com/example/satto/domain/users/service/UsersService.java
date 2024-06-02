@@ -23,4 +23,8 @@ public interface UsersService {
     boolean emailDuplicate(String email);
 
     Users uploadProfileImg(String url, String email);
+
+    boolean passwordCheck(String firstPassword, String secondPassword);
+
+    boolean nicknameDuplicate(String nickname);
 }

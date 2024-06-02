@@ -23,7 +23,7 @@ public class UsersController {
     private final UsersService usersService;
     private final FileService fileService;
 
-    // 아이디 중복 확인
+    // email 중복 확인
     @GetMapping("/id/{email}")
     public BaseResponse<?> emailDuplicate(@PathVariable("email") String email) {
         if (usersService.emailDuplicate(email)) {
@@ -33,15 +33,33 @@ public class UsersController {
         }
     }
 
+    // nickname 중복 확인
+    @GetMapping("/id/nickname/{nickname}")
+    public BaseResponse<?> nicknameDuplicate(@PathVariable("nickname") String nickname) {
+        if (usersService.nicknameDuplicate(nickname)) {
+            return BaseResponse.onSuccess("존재하는 닉네임 입니다.");
+        } else {
+            return BaseResponse.onFailure("해당 닉네임을 사용할 수 있습니다.");
+        }
+    }
+
+
     // 비밀번호 조건 확인
     @PostMapping("/id/password")
     public BaseResponse<?> passwordCheck(@RequestBody UsersRequestDTO.passwordDTO passwordDTO) {
         // 제약 검증
-        if (!passwordDTO.getPassword().matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}")) {
+        if (!passwordDTO.getFirstPassword().matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}")) {
             // 제약 조건을 만족 하지 않은 경우
             return BaseResponse.onFailure("8~16 자리의 영어(대/소문), 숫자, 특수문자를 포함해 주세요.");
-        } else {
-            return BaseResponse.onSuccess("해당 비밀번호를 사용할 수 있습니다.");
+        }
+
+        if (usersService.passwordCheck(passwordDTO.getFirstPassword(), passwordDTO.getSecondPassword())) {
+            return BaseResponse.onSuccess("비밀번호가 일치합니다.");
+        }
+        else {
+            System.out.println(passwordDTO.getFirstPassword());
+            System.out.println(passwordDTO.getSecondPassword());
+            return BaseResponse.onFailure("비밀번호가 일치하지 않습니다.");
         }
 
     }
@@ -54,13 +72,13 @@ public class UsersController {
 //        return BaseResponse.onSuccess("프로필 사진 등록 완료");
 //    }
 
-    // 이미지 삭제
-    @DeleteMapping("/id/{email}/profile/image")
-    public BaseResponse deleteProfileImg(@AuthenticationPrincipal Users user) {
-        String profileImg = user.getProfileImg();
-        fileService.deleteFile(profileImg);
-        return BaseResponse.onSuccess("삭제 완료");
-    }
+//    // 이미지 삭제
+//    @DeleteMapping("/id/{email}/profile/image")
+//    public BaseResponse deleteProfileImg(@AuthenticationPrincipal Users user) {
+//        String profileImg = user.getProfileImg();
+//        fileService.deleteFile(profileImg);
+//        return BaseResponse.onSuccess("삭제 완료");
+//    }
 
 
     // 사용자 정보 조회
