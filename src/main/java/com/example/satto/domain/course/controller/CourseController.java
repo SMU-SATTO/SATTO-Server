@@ -6,11 +6,11 @@ import com.example.satto.domain.course.dto.*;
 import com.example.satto.domain.course.entity.PreviousLecture;
 import com.example.satto.domain.course.service.CourseService;
 import com.example.satto.domain.users.entity.Users;
-import com.example.satto.global.annotation.AuthUser;
 import com.example.satto.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class CourseController {
             description = "사용자가 입력한 수강 목록을 조회합니다. 해당 사용자의 수강 목록에 속한 강의 정보 리스트를 전송합니다.")
     @GetMapping("")
     public BaseResponse<CourseResponseListDto> getCourseList(
-            @AuthUser Users user) {
+            @AuthenticationPrincipal Users user) {
         List<PreviousLecture> previousLectureList = courseService.getCourse(user);
         return BaseResponse.onSuccess(CourseConverter
                 .toCourseResponseDtoList(previousLectureList));
@@ -60,7 +60,7 @@ public class CourseController {
             description = "사용자의 수강 목록에 요청된 강의를 추가합니다.")
     @PostMapping("")
     public BaseResponse<?> updateCourse(
-            @AuthUser Users user,
+            @AuthenticationPrincipal Users user,
             @RequestBody CourseRequestListDto courseRequestListDto) {
         courseService.updateCourse(user, courseRequestListDto);
         return BaseResponse.onSuccess("수정 되었습니다.");
@@ -70,7 +70,7 @@ public class CourseController {
             description = "사용자의 수강 목록에서 요청된 강의를 삭제합니다.")
     @DeleteMapping("")
     public BaseResponse<?> deleteCourse(
-            @AuthUser Users user,
+            @AuthenticationPrincipal Users user,
             @RequestBody CourseRequestListDto courseRequestListDto) {
         courseService.deleteCourse(user, courseRequestListDto);
         return BaseResponse.onSuccess("삭제 되었습니다.");
@@ -80,7 +80,7 @@ public class CourseController {
             description = "사용자의 수강 목록을 기반으로 졸업 요건 충족 학점 정보를 전송합니다.")
     @GetMapping("/graduation")
     public BaseResponse<GraduationResponseDto> getGraduation(
-            @AuthUser Users user) {
+            @AuthenticationPrincipal Users user) {
         List<PreviousLecture> previousLectureList = courseService.getCourse(user);
         return BaseResponse.onSuccess(CourseConverter
                 .toGraduationResponseDto(previousLectureList));

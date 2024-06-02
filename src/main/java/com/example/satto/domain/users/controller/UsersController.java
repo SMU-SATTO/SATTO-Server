@@ -46,13 +46,13 @@ public class UsersController {
 
     }
 
-    // 프로필 이미지 등록
-    @PostMapping("/id/{email}/profile/image")
-    public BaseResponse<?> uploadProfileImg(@RequestParam("file") MultipartFile file, @PathVariable("email") String email) throws IOException {
-        String url = fileService.uploadFile(file, FileFolder.profile_Image);
-        usersService.uploadProfileImg(url, email);
-        return BaseResponse.onSuccess("프로필 사진 등록 완료");
-    }
+//    // 프로필 이미지 등록
+//    @PostMapping("/id/{email}/profile/image")
+//    public BaseResponse<?> uploadProfileImg(@RequestParam("file") MultipartFile file, @PathVariable("email") String email) throws IOException {
+//        String url = fileService.uploadFile(file, FileFolder.profile_Image);
+//        usersService.uploadProfileImg(url, email);
+//        return BaseResponse.onSuccess("프로필 사진 등록 완료");
+//    }
 
     // 이미지 삭제
     @DeleteMapping("/id/{email}/profile/image")
