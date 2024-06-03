@@ -11,7 +11,9 @@ public record CurrentLectureResponseDTO(
         String sbjDivcls,
         String sbjName,
         String prof,
-        String time
+        String time,
+        String category,
+        int cdt
 ) {
     public static CurrentLectureResponseDTO from(CurrentLecture currentLecture){
         return new CurrentLectureResponseDTO(
@@ -20,13 +22,15 @@ public record CurrentLectureResponseDTO(
                 currentLecture.getSbjDivcls(),
                 currentLecture.getSbjNm(),
                 currentLecture.getStaffNm(),
-                currentLecture.getLectTimeRoom()
+                currentLecture.getLectTimeRoom(),
+                currentLecture.getCmpDivNm(),
+                currentLecture.getCdt()
         );
     }
     public static List<CurrentLectureResponseDTO> from(List<CurrentLecture> currentLectureList){
         return
                 currentLectureList.stream()
-                .map(CurrentLectureResponseDTO::from)
-                .collect(Collectors.toList());
+                        .map(CurrentLectureResponseDTO::from)
+                        .collect(Collectors.toList());
     }
 }
