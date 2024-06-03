@@ -15,13 +15,13 @@
     @Configuration
     public class SwaggerConfig {
 
-        @Value("${server.address.domain}")
-        private String default_ip;
+//        @Value("${server.address.domain}")
+//        private String default_ip;
 
         // url: http://localhost:8080/swagger-ui/index.html#/
         @Bean
         public OpenAPI getOpenApi() {
-            Server server = new Server().url(default_ip);
+            Server server = new Server().url("/");
 //            Server server = new Server().url("/");
             return new OpenAPI()
                     .info(getSwaggerInfo())
