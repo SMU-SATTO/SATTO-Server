@@ -1,7 +1,7 @@
 package com.example.satto.config.security.filter;
 
 import com.example.satto.config.security.JwtService;
-import com.example.satto.token.TokenRepository;
+import com.example.satto.config.security.token.TokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

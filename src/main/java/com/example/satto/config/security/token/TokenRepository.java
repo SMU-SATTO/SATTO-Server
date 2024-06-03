@@ -1,4 +1,4 @@
-package com.example.satto.token;
+package com.example.satto.config.security.token;
 
 import com.example.satto.config.security.token.Token;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,6 @@
 package com.example.satto.config.security.handler;
 
-import com.example.satto.token.TokenRepository;
+import com.example.satto.config.security.token.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

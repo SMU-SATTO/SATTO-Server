@@ -3,11 +3,11 @@ package com.example.satto.config.security.auth;
 
 import com.example.satto.config.security.JwtService;
 import com.example.satto.config.security.token.Token;
+import com.example.satto.config.security.token.TokenRepository;
 import com.example.satto.config.security.token.TokenType;
 import com.example.satto.domain.users.Role;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.repository.UsersRepository;
-import com.example.satto.token.TokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
