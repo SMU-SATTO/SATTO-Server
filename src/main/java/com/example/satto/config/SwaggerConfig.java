@@ -1,50 +1,54 @@
-package com.example.satto.config;
+    package com.example.satto.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+    import org.springframework.beans.factory.annotation.Value;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.servers.Server;
+    import io.swagger.v3.oas.models.Components;
+    import io.swagger.v3.oas.models.OpenAPI;
+    import io.swagger.v3.oas.models.info.Info;
+    import io.swagger.v3.oas.models.info.License;
+    import io.swagger.v3.oas.models.security.SecurityRequirement;
+    import io.swagger.v3.oas.models.security.SecurityScheme;
+    import io.swagger.v3.oas.models.servers.Server;
 
-@Configuration
-public class SwaggerConfig {
+    @Configuration
+    public class SwaggerConfig {
 
-    // url: http://localhost:8080/swagger-ui/index.html#/
-    @Bean
-    public OpenAPI getOpenApi() {
-        Server server = new Server().url("/");
+        @Value("${server.address.domain}")
+        private String default_ip;
 
-        return new OpenAPI()
-                .info(getSwaggerInfo())
-                .components(authSetting())
-                .addServersItem(server)
-                .addSecurityItem(new SecurityRequirement().addList("access-token"));
+        // url: http://localhost:8080/swagger-ui/index.html#/
+        @Bean
+        public OpenAPI getOpenApi() {
+            Server server = new Server().url(default_ip);
+//            Server server = new Server().url("/");
+            return new OpenAPI()
+                    .info(getSwaggerInfo())
+                    .components(authSetting())
+                    .addServersItem(server)
+                    .addSecurityItem(new SecurityRequirement().addList("access-token"));
+        }
+
+        private Info getSwaggerInfo() {
+            License license = new License();
+            license.setName("{Application}");
+
+            return new Info()
+                    .title("SATTO API Document")
+                    .description("This is SATTO's API document.")
+                    .version("v0.0.1")
+                    .license(license);
+        }
+
+        private Components authSetting() {
+            return new Components()
+                    .addSecuritySchemes(
+                            "access-token",
+                            new SecurityScheme()
+                                    .type(SecurityScheme.Type.HTTP)
+                                    .scheme("bearer")
+                                    .bearerFormat("JWT"));
+        }
+
     }
-
-    private Info getSwaggerInfo() {
-        License license = new License();
-        license.setName("{Application}");
-
-        return new Info()
-                .title("SATTO API Document")
-                .description("This is SATTO's API document.")
-                .version("v0.0.1")
-                .license(license);
-    }
-
-    private Components authSetting() {
-        return new Components()
-                .addSecuritySchemes(
-                        "access-token",
-                        new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT"));
-    }
-
-}
