@@ -59,6 +59,8 @@ public class Users extends BaseEntity implements UserDetails {
 
     private Role role;
 
+    private int grade;
+
 
     // 팔로잉
     @Getter
