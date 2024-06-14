@@ -5,6 +5,7 @@ import com.example.satto.domain.users.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
@@ -16,9 +17,9 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     Follow findByFollowerIdUserIdAndFollowingIdUserId(Long followerId, Long userId);
 
-    @Query ("DELETE FROM Follow t WHERE t.followingId = :userId")
-    void deleteFollowingId(@Param("userId") Long userId);
+    @Transactional
+    void deleteByFollowingId(Users follwingId);
 
-    @Query ("DELETE FROM Follow t WHERE t.followerId = :userId")
-    void deleteFollowerId(@Param("userId") Long userId);
+    @Transactional
+    void deleteByFollowerId(Users followerId);
 }

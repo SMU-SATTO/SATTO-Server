@@ -28,5 +28,5 @@ public interface UsersService {
 
     boolean nicknameDuplicate(String nickname);
 
-    void withdrawal(Long userId);
+    void withdrawal(Users user);
 }
