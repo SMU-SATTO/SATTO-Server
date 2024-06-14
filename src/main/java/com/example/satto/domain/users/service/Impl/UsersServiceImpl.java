@@ -140,12 +140,11 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     @Transactional
-    public void withdrawal(Long userId) {
-//        Long userId = user.getUserId();
-        followRepository.deleteFollowingId(userId);
-        followRepository.deleteFollowerId(userId);
+    public void withdrawal(Users user) {
+        Long userId = user.getUserId();
+        followRepository.deleteByFollowingId(user);
+        followRepository.deleteByFollowerId(user);
 
-        tokenRepository.deleteById(userId);
         usersRepository.deleteById(userId);
 
     }

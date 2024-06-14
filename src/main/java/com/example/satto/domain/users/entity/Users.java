@@ -96,7 +96,7 @@ public class Users extends BaseEntity implements UserDetails {
     // Token
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users", cascade = CascadeType.REMOVE)
     private List<Token> tokens;
 
     // UserDeatails 구현

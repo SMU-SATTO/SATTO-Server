@@ -115,8 +115,8 @@ public class UsersController {
 
     @DeleteMapping("account/withdrawal")
     public BaseResponse<?> withdrawal(@AuthenticationPrincipal Users user) {
-        Long userId = user.getUserId();
-        usersService.withdrawal(userId);
+//        Long userId = user.getUserId();
+        usersService.withdrawal(user);
         return BaseResponse.onSuccess("계정 탈퇴 완료");
     }
 
