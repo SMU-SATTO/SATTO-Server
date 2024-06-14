@@ -27,4 +27,6 @@ public interface UsersService {
     boolean passwordCheck(String firstPassword, String secondPassword);
 
     boolean nicknameDuplicate(String nickname);
+
+    void withdrawal(Long userId);
 }
