@@ -135,4 +135,9 @@ public class UsersServiceImpl implements UsersService {
         return (usersRepository.existsByNickname(nickname));
     }
 
+    @Override
+    public void withdrawal(Long userId) {
+         usersRepository.deleteById(userId);
+    }
+
 }
