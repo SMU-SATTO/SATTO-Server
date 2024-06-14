@@ -1,5 +1,6 @@
 package com.example.satto.domain.users.service.Impl;
 
+import com.example.satto.config.security.token.TokenRepository;
 import com.example.satto.domain.follow.entity.Follow;
 import com.example.satto.domain.follow.repository.FollowRepository;
 import com.example.satto.domain.users.dto.UsersRequestDTO;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
     private final FollowRepository followRepository;
+    private final TokenRepository tokenRepository;
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -39,12 +42,12 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Object viewFollowerList(Long userId) {
         List<String> followerList = new ArrayList<>();
-        Optional<Users> optionalUser =usersRepository.findById(userId);
+        Optional<Users> optionalUser = usersRepository.findById(userId);
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
 
-            for (Follow followerId: user.getFollowingList()) {
-                if ((followerId.getRequest() == 2) && (!followerId.getFollowingId().equals(user.getUserId()) )) {
+            for (Follow followerId : user.getFollowingList()) {
+                if ((followerId.getRequest() == 2) && (!followerId.getFollowingId().equals(user.getUserId()))) {
                     followerList.add(followerId.getFollowerId().getEmail());
                 }
             }
@@ -59,11 +62,11 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Object viewFollowingList(Long userId) {
         List<String> followingList = new ArrayList<>();
-        Optional<Users> optionalUser =usersRepository.findById(userId);
+        Optional<Users> optionalUser = usersRepository.findById(userId);
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
 
-            for (Follow followingId: user.getFollowerList()) {
+            for (Follow followingId : user.getFollowerList()) {
                 if ((followingId.getRequest() == 2) && (!followingId.getFollowerId().equals(user.getUserId()))) {
                     followingList.add(followingId.getFollowingId().getEmail());
                 }
@@ -136,8 +139,15 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    @Transactional
     public void withdrawal(Long userId) {
-         usersRepository.deleteById(userId);
+//        Long userId = user.getUserId();
+        followRepository.deleteFollowingId(userId);
+        followRepository.deleteFollowerId(userId);
+
+        tokenRepository.deleteById(userId);
+        usersRepository.deleteById(userId);
+
     }
 
 }
