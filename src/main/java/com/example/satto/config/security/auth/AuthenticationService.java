@@ -3,6 +3,7 @@ package com.example.satto.config.security.auth;
 
 import com.example.satto.config.security.JwtService;
 import com.example.satto.config.security.token.Token;
+import com.example.satto.config.security.token.TokenBlackListRepository;
 import com.example.satto.config.security.token.TokenRepository;
 import com.example.satto.config.security.token.TokenType;
 import com.example.satto.domain.users.Role;
@@ -26,6 +27,7 @@ import java.util.NoSuchElementException;
 public class AuthenticationService {
     private final UsersRepository usersRepository;
     private final TokenRepository tokenRepository;
+    private final TokenBlackListRepository tokenBlackListRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -97,9 +99,10 @@ public class AuthenticationService {
             return;
         }
         refreshToken = authHeader.substring(7);
+        if (tokenBlackListRepository.existsByToken(refreshToken)) {
+            throw new NoSuchElementException("유효하지 않은 접근입니다.");
+        }
         userEmail = jwtService.extractUserName(refreshToken);
-        System.out.println(userEmail);
-        System.out.println("*********************************");
         if (userEmail != null) {
             var usersOptional = this.usersRepository.findByEmail(userEmail);
             if (usersOptional.isPresent()) {
