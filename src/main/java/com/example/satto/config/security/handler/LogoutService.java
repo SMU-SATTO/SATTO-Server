@@ -27,7 +27,6 @@ public class LogoutService implements LogoutHandler {
     final String authHeader = request.getHeader("Authorization");
     final String jwt;
     if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-      System.out.println("1=================");
       return;
     }
     jwt = authHeader.substring(7);
@@ -39,7 +38,6 @@ public class LogoutService implements LogoutHandler {
       storedToken.setExpired(true);
       storedToken.setRevoked(true);
       blackList.setToken(jwt);
-      System.out.println("여기=================jwt"+jwt);
       tokenRepository.save(storedToken);
       tokenBlackListRepository.save(blackList);
       SecurityContextHolder.clearContext();
