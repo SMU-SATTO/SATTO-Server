@@ -24,8 +24,6 @@ public interface UsersService {
 
     Users uploadProfileImg(String url, String email);
 
-    boolean passwordCheck(String firstPassword, String secondPassword);
-
     boolean nicknameDuplicate(String nickname);
 
     void withdrawal(Users user);

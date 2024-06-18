@@ -129,11 +129,6 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public boolean passwordCheck(String firstPassword, String secondPassword) {
-        return firstPassword.equals(secondPassword);
-    }
-
-    @Override
     public boolean nicknameDuplicate(String nickname) {
         return (usersRepository.existsByNickname(nickname));
     }
