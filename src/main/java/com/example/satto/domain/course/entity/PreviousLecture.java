@@ -15,9 +15,9 @@ import java.util.List;
 public class PreviousLecture extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "previous_lect_id")
-    private Long id;
+    private Long previousLectureId;
 
     private String name;
     private String cmpDiv;

@@ -1,5 +1,7 @@
 package com.example.satto.domain.currentLecture.service;
 
+import com.example.satto.domain.currentLecture.converter.CurrentLectureConverter;
+import com.example.satto.domain.currentLecture.dto.CurrentLectureListResponseDTO;
 import com.example.satto.domain.currentLecture.dto.CurrentLectureResponseDTO;
 import com.example.satto.domain.currentLecture.entity.CurrentLecture;
 import com.example.satto.domain.currentLecture.repository.CurrentLectureRepository;
@@ -15,9 +17,9 @@ public class CurrentLectureService {
 
     private final CurrentLectureRepository currentLectureRepository;
 
-    public List<CurrentLectureResponseDTO> getCurrentLecture(){
+    public CurrentLectureListResponseDTO getCurrentLectureList(){
         List<CurrentLecture> allLecture = currentLectureRepository.findAll();
-        List<CurrentLectureResponseDTO> currentLectureResponseDTOList = CurrentLectureResponseDTO.from(allLecture);
+        CurrentLectureListResponseDTO currentLectureResponseDTOList = CurrentLectureConverter.toCurrentLectureResponseDtoList(allLecture);
         return currentLectureResponseDTOList;
     }
 }
