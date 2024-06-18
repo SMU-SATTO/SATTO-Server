@@ -24,7 +24,7 @@ public class PreviousLecturesConverter {
     public static PreviousLectureResponseDto toPreviousLectureResponseDto(PreviousLecture previousLecture) {
         return PreviousLectureResponseDto.builder()
                 .cmpDiv(previousLecture.getCmpDiv())
-                .name(previousLecture.getName())
+                .name(previousLecture.getLectName())
                 .professor(previousLecture.getProfessor())
                 .code(previousLecture.getCode())
                 .build();

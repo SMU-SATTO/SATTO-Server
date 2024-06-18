@@ -22,7 +22,7 @@ public class CourseConverter {
     public static CourseResponseDto toCourseResponseDto(PreviousLecture previousLecture) {
         return CourseResponseDto.builder()
                 .cmpDiv(previousLecture.getCmpDiv())
-                .name(previousLecture.getName())
+                .name(previousLecture.getLectName())
                 .professor(previousLecture.getProfessor())
                 .semesterYear(previousLecture.getSemesterYear())
                 .code(previousLecture.getCode())

@@ -5,7 +5,6 @@ import lombok.*;
 import org.springframework.lang.Nullable;
 
 @Entity
-@Table(name = "test")
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
