@@ -31,4 +31,11 @@ public class CurrentLectureConverter {
                 .currentLectureResponseDTOList(currentLectureResponseDTOList)
                 .build();
     }
+
+    // DTO 리스트 변환 메소드
+    public static List<CurrentLectureResponseDTO> toCurrentLectureDtoList(List<CurrentLecture> currentLectureList) {
+        return currentLectureList.stream()
+                .map(CurrentLectureConverter::toCurrentLectureResponseDto)
+                .toList();
+    }
 }

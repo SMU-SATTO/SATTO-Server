@@ -27,6 +27,7 @@ public class CurrentLecture {
     private String professor;
     private String subjectType;
     private String code;
+    private String codeSection;
     private String notice;
 }
 
