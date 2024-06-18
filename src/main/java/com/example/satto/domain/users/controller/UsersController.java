@@ -45,27 +45,8 @@ public class UsersController {
     }
 
 
-    // 비밀번호 조건 확인
-    @PostMapping("/id/password")
-    public BaseResponse<?> passwordCheck(@RequestBody UsersRequestDTO.passwordDTO passwordDTO) {
-        // 제약 검증
-        if (!passwordDTO.getFirstPassword().matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}")) {
-            // 제약 조건을 만족 하지 않은 경우
-            return BaseResponse.onFailure("8~16 자리의 영어(대/소문), 숫자, 특수문자를 포함해 주세요.");
-        }
 
-        if (usersService.passwordCheck(passwordDTO.getFirstPassword(), passwordDTO.getSecondPassword())) {
-            return BaseResponse.onSuccess("비밀번호가 일치합니다.");
-        }
-        else {
-            System.out.println(passwordDTO.getFirstPassword());
-            System.out.println(passwordDTO.getSecondPassword());
-            return BaseResponse.onFailure("비밀번호가 일치하지 않습니다.");
-        }
-
-    }
-
-//    // 프로필 이미지 등록
+//     프로필 이미지 등록
 //    @PostMapping("/id/{email}/profile/image")
 //    public BaseResponse<?> uploadProfileImg(@RequestParam("file") MultipartFile file, @PathVariable("email") String email) throws IOException {
 //        String url = fileService.uploadFile(file, FileFolder.profile_Image);

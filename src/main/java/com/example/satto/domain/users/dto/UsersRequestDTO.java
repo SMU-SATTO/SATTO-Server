@@ -13,10 +13,5 @@ public class UsersRequestDTO {
         private String department;
     }
 
-    @Getter
-    public static class passwordDTO {
-        private String firstPassword;
-        private String secondPassword;
-    }
 
 }
