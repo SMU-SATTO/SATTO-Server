@@ -12,7 +12,7 @@ public record TimeTableResponseDTO(
     public static String calculateTotalTime(List<CurrentLectureResponseDTO> timetable) {
         String tt = "";
         for (CurrentLectureResponseDTO lecture : timetable) {
-            tt += lecture.time();
+            tt += lecture.lectTime();
         }
         return tt;
     }

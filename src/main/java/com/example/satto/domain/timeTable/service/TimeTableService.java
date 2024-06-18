@@ -1,5 +1,7 @@
 package com.example.satto.domain.timeTable.service;
 
+import com.example.satto.domain.currentLecture.converter.CurrentLectureConverter;
+import com.example.satto.domain.currentLecture.dto.CurrentLectureListResponseDTO;
 import com.example.satto.domain.currentLecture.dto.CurrentLectureResponseDTO;
 import com.example.satto.domain.currentLecture.entity.CurrentLecture;
 import com.example.satto.domain.currentLecture.repository.CurrentLectureRepository;
@@ -26,10 +28,10 @@ public class TimeTableService {
     public static boolean isNotTimeConflict(List<CurrentLectureResponseDTO> lectList,
                                             CurrentLectureResponseDTO lect) {
 
-        String[] lectTimeSegments = lect.time().split(" "); // 한 번만 분리
+        String[] lectTimeSegments = lect.lectTime().split(" "); // 한 번만 분리
         for (CurrentLectureResponseDTO existingLect : lectList) {
             for (String segment : lectTimeSegments) {
-                if (existingLect.time().contains(segment)) {
+                if (existingLect.lectTime().contains(segment)) {
                     return false; // 충돌 발견 시 즉시 반환
                 }
             }
@@ -42,7 +44,7 @@ public class TimeTableService {
                                                   CurrentLectureResponseDTO lect) {
 
         for (CurrentLectureResponseDTO existingLect : lectList) {
-            if (existingLect.sbjNo().equals(lect.sbjNo())) {
+            if (existingLect.code().equals(lect.code())) {
                 return false; // 같은 강의 번호 발견 시 즉시 반환
             }
         }
@@ -78,8 +80,8 @@ public class TimeTableService {
     public List<MajorCombinationResponseDTO> createMajorTimeTable(TimeTableRequestDTO createDTO, Users users) {
 
         //3학년 1학기 4전공 선택 기준
-        List<CurrentLecture> majorLectList = currentLectureRepository.findCurrentLectureByEstDeptInfoAndCrsShyr(users.getDepartment(), users.getGrade());
-        List<CurrentLectureResponseDTO> majorLectDetailList = CurrentLectureResponseDTO.from(majorLectList);
+        List<CurrentLecture> majorLectList = currentLectureRepository.findCurrentLectureByDepartmentAndGrade(users.getDepartment(), users.getGrade());
+        List<CurrentLectureResponseDTO> majorLectDetailList = CurrentLectureConverter.toCurrentLectureDtoList(majorLectList);
 
         List<CurrentLectureResponseDTO> lectDetailList = new ArrayList<>();
         List<List<CurrentLectureResponseDTO>> timeTable = new ArrayList<>();
@@ -87,10 +89,10 @@ public class TimeTableService {
 
         List<CurrentLecture> requiredLectList = new ArrayList<>();
         for( String lect : createDTO.requiredLect() ){
-            requiredLectList.add(currentLectureRepository.findCurrentLectureBySbjDivcls(lect));
+            requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lect));
         }
 
-        List<CurrentLectureResponseDTO> requiredLectDetailList = CurrentLectureResponseDTO.from(requiredLectList);
+        List<CurrentLectureResponseDTO> requiredLectDetailList = CurrentLectureConverter.toCurrentLectureDtoList(requiredLectList);
 
         majorLectDetailList = removeLecturesInImpossibleTimeZones(majorLectDetailList, createDTO.impossibleTimeZone());
 
@@ -117,7 +119,7 @@ public class TimeTableService {
         List<Integer> toRemoveIndex = new ArrayList<>();
         for (String time : timeSegments) {
             for (int i = 0; i < majorLectDetailList.size(); i++) {
-                if (majorLectDetailList.get(i).time().contains(time)) {
+                if (majorLectDetailList.get(i).lectTime().contains(time)) {
                     toRemoveIndex.add(i);
                 }
             }
@@ -135,8 +137,8 @@ public class TimeTableService {
 
         for (TimeTableResponseDTO data : result) {
             Set<String> sbjNames = data.timeTable().stream()
-                    .filter(lecture -> "1전심".equals(lecture.category()) || "1전선".equals(lecture.category()))
-                    .map(CurrentLectureResponseDTO::sbjName)
+                    .filter(lecture -> "1전심".equals(lecture.cmpDiv()) || "1전선".equals(lecture.cmpDiv()))
+                    .map(CurrentLectureResponseDTO::lectName)
                     .collect(Collectors.toSet());
 
             combinationCounts.merge(sbjNames, 1, Integer::sum);
@@ -149,8 +151,8 @@ public class TimeTableService {
 
     public List<TimeTableResponseDTO> createTimeTable(TimeTableRequestDTO createDTO, List<TimeTableResponseDTO> majorTimetable) {
 
-        List<CurrentLecture> entireLect = currentLectureRepository.findLectByCmpDivNm("교선");
-        List<CurrentLectureResponseDTO> entireLectList =CurrentLectureResponseDTO.from(entireLect);
+        List<CurrentLecture> entireLect = currentLectureRepository.findLectByCmpDiv("교선");
+        List<CurrentLectureResponseDTO> entireLectList = CurrentLectureConverter.toCurrentLectureDtoList(entireLect);
 
         List<CurrentLectureResponseDTO> lectDetailList = new ArrayList<>();
         List<List<CurrentLectureResponseDTO>> timeTable = new ArrayList<>();
@@ -182,7 +184,7 @@ public class TimeTableService {
                                           List<List<CurrentLectureResponseDTO>> result,
                                           int targetSize
     ) {
-        int currentCredits = current.stream().mapToInt(lecture -> lecture.cdt()).sum();
+        int currentCredits = current.stream().mapToInt(lecture -> lecture.credit()).sum();
         if ((currentCredits == targetSize) && !current.isEmpty()) {
             result.add((new ArrayList<>(current)));
             return;
@@ -190,7 +192,7 @@ public class TimeTableService {
 
         for (int i = start; i < majorLectures.size(); i++) {
             CurrentLectureResponseDTO nextMajorLecture = majorLectures.get(i);
-            int nextCredits = currentCredits + nextMajorLecture.cdt();
+            int nextCredits = currentCredits + nextMajorLecture.credit();
             if (nextCredits <= targetSize && isNotConflict(current, nextMajorLecture)) {
                 current.add(nextMajorLecture);
                 generateCombinations1212(majorLectures, i + 1, current, result, targetSize);
