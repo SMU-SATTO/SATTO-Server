@@ -87,14 +87,14 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public void privateAccount(Long userId) {
         Users user = usersRepository.findById(userId).orElseThrow();
-        user.setIsPublic((byte) 0);
+        user.setPublic(false);
         usersRepository.save(user);
     }
 
     @Override
     public void publicAccount(Long userId) {
         Users user = usersRepository.findById(userId).orElseThrow();
-        user.setIsPublic((byte) 1);
+        user.setPublic(true);
         usersRepository.save(user);
     }
 

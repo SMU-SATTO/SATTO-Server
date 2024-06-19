@@ -20,5 +20,5 @@ public class RegisterRequest {
     private String nickname;
     private String department;
     private int grade;
-    private Byte isPublic;
+    private boolean isPublic;
 }

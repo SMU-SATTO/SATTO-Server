@@ -84,7 +84,7 @@ public class UsersController {
     }
 
     // 계정 비공개 설정
-    @Operation(summary = "계정 비공개 설정", description = "숫자 1 은 공개, 0 은 비공개")
+    @Operation(summary = "계정 비공개 설정", description = "true는 공개, false는 비공개")
     @PatchMapping("account/private")
     public BaseResponse<?> privateAccount(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -93,7 +93,7 @@ public class UsersController {
     }
 
     // 계정 공개 설정
-    @Operation(summary = "계정 공개 설정", description = "숫자 1 은 공개, 0 은 비공개")
+    @Operation(summary = "계정 공개 설정", description = "true는 공개, false는 비공개")
     @PatchMapping("account/public")
     public BaseResponse<?> publicAccount(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
