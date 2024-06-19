@@ -2,12 +2,12 @@ package com.example.satto.domain.timeTable.dto;
 
 import java.util.List;
 
-public record TimeTableRequestDTO(
-        int maxGPA,
-        int minGPA,
+public record EntireTimeTableRequestDTO(
+        int GPA,
         List<String> requiredLect,
         int majorCount,
         int cyberCount,
-        String impossibleTimeZone
+        String impossibleTimeZone,
+        List<List<String>> majorList //학수번호
 ) {
 }

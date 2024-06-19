@@ -25,4 +25,6 @@ public interface CurrentLectureRepository extends JpaRepository<CurrentLecture, 
     List<CurrentLecture> findLectByCmpDiv(@Param("cmpdiv") String cmpDiv);
     CurrentLecture findCurrentLectureByCodeSection(String codeSection);
 
+    List<CurrentLecture> findCurrentLecturesByCode(String code);
+
 }
