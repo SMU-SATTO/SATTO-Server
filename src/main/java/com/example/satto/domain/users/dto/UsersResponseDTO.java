@@ -17,7 +17,8 @@ public class UsersResponseDTO {
         private String name;
         private String nickname;
         private String department;
-        private String profileImg;
+        private int grade;
+//        private String profileImg;
         private LocalDateTime createdAt;
         private LocalDateTime updateAt;
     }
