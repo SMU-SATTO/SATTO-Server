@@ -178,24 +178,27 @@ public class TimeTableService {
         entireLectList = removeLecturesInImpossibleTimeZones(entireLectList, createDTO.impossibleTimeZone());
 
         //임의 교양 리스트 생성
-        Collections.shuffle(entireLectList);
-        List<CurrentLectureResponseDTO> randomList = entireLectList.subList(0,10);
-
+//        Collections.shuffle(entireLectList);
+//        List<CurrentLectureResponseDTO> randomList = entireLectList.subList(0,10);
         List<CurrentLecture> requiredLectList = new ArrayList<>();
-        for( String lect : createDTO.requiredLect() ){
-            requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lect));
+        List<CurrentLectureResponseDTO> requiredLectDetailList = new ArrayList<>();
+        if(!createDTO.requiredLect().isEmpty()) {
+            for (String lect : createDTO.requiredLect()) {
+                requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lect));
+            }
+
+            requiredLectDetailList = CurrentLectureConverter.toCurrentLectureDtoList(requiredLectList);
+
+            //필수로 들어야할 강의 우선 조합
+            generateCombinations(requiredLectDetailList, 0, lectDetailList, majorTimeTable, requiredLectDetailList.size());
+            generateCombinations(majorLectDetailList, 0, lectDetailList, majorTimeTable, createDTO.majorCount() + requiredLectDetailList.size());
         }
+        generateCombinations(majorLectDetailList, 0, lectDetailList, majorTimeTable, createDTO.majorCount());
 
-        List<CurrentLectureResponseDTO> requiredLectDetailList = CurrentLectureConverter.toCurrentLectureDtoList(requiredLectList);
-
-        //필수로 들어야할 강의 우선 조합
-        generateCombinations(requiredLectDetailList, 0, lectDetailList, majorTimeTable, requiredLectDetailList.size());
-
-        generateCombinations(majorLectDetailList, 0, lectDetailList, majorTimeTable, createDTO.majorCount() + requiredLectDetailList.size());
         result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
 
         for(List<CurrentLectureResponseDTO> lect : majorTimeTable){
-            generateCombinations1212(randomList, 0, lect, majorTimeTable, createDTO.GPA()-createDTO.cyberCount()*3);
+            generateCombinations1212(entireLectList, 0, lect, majorTimeTable, createDTO.GPA()-createDTO.cyberCount()*3);
         }
 
         result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
