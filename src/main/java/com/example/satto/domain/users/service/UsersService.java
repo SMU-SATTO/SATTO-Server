@@ -1,5 +1,6 @@
 package com.example.satto.domain.users.service;
 
+import com.example.satto.domain.mail.dto.EmailRequestDTO;
 import com.example.satto.domain.users.dto.UsersRequestDTO;
 import com.example.satto.domain.users.entity.Users;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,4 +30,6 @@ public interface UsersService {
     void withdrawal(Users user);
 
     Users beforeUpdateInformation(Long userId);
+
+    boolean studetIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest);
 }

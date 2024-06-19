@@ -3,6 +3,7 @@ package com.example.satto.domain.users.service.Impl;
 import com.example.satto.config.security.token.TokenRepository;
 import com.example.satto.domain.follow.entity.Follow;
 import com.example.satto.domain.follow.repository.FollowRepository;
+import com.example.satto.domain.mail.dto.EmailRequestDTO;
 import com.example.satto.domain.users.dto.UsersRequestDTO;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.repository.UsersRepository;
@@ -158,6 +159,11 @@ public class UsersServiceImpl implements UsersService {
 
         return information;
 
+    }
+
+    @Override
+    public boolean studetIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest) {
+        return usersRepository.existsByStudentId(Integer.parseInt(emailCheckRequest.getStudentId()));
     }
 
 }
