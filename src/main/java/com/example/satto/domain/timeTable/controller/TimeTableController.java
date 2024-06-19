@@ -1,6 +1,8 @@
 package com.example.satto.domain.timeTable.controller;
 
+import com.example.satto.domain.currentLecture.dto.CurrentLectureListResponseDTO;
 import com.example.satto.domain.timeTable.dto.MajorCombinationResponseDTO;
+import com.example.satto.domain.timeTable.dto.MajorTimeTableRequestDTO;
 import com.example.satto.domain.timeTable.dto.TimeTableRequestDTO;
 import com.example.satto.domain.timeTable.dto.TimeTableResponseDTO;
 import com.example.satto.domain.timeTable.service.TimeTableService;
@@ -22,8 +24,14 @@ public class TimeTableController {
     private final TimeTableService timeTableService;
 
     @PostMapping
-    public BaseResponse<List<MajorCombinationResponseDTO>> createTimeTable(TimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
+    public BaseResponse<List<MajorCombinationResponseDTO>> createMajorTimeTable(MajorTimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
         List<MajorCombinationResponseDTO> result = timeTableService.createMajorTimeTable(createDTO, users);
+        return BaseResponse.onSuccess(result);
+    }
+
+    @PostMapping("/auto")
+    public BaseResponse<List<TimeTableResponseDTO>> createTimeTable(TimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
+        List<TimeTableResponseDTO> result = timeTableService.createTimeTable(createDTO);
         return BaseResponse.onSuccess(result);
     }
 }

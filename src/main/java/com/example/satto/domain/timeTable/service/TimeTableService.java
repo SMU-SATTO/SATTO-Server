@@ -1,11 +1,11 @@
 package com.example.satto.domain.timeTable.service;
 
 import com.example.satto.domain.currentLecture.converter.CurrentLectureConverter;
-import com.example.satto.domain.currentLecture.dto.CurrentLectureListResponseDTO;
 import com.example.satto.domain.currentLecture.dto.CurrentLectureResponseDTO;
 import com.example.satto.domain.currentLecture.entity.CurrentLecture;
 import com.example.satto.domain.currentLecture.repository.CurrentLectureRepository;
 import com.example.satto.domain.timeTable.dto.MajorCombinationResponseDTO;
+import com.example.satto.domain.timeTable.dto.MajorTimeTableRequestDTO;
 import com.example.satto.domain.timeTable.dto.TimeTableRequestDTO;
 import com.example.satto.domain.timeTable.dto.TimeTableResponseDTO;
 import com.example.satto.domain.timeTable.repository.TimeTableRepository;
@@ -77,7 +77,7 @@ public class TimeTableService {
         }
     }
 
-    public List<MajorCombinationResponseDTO> createMajorTimeTable(TimeTableRequestDTO createDTO, Users users) {
+    public List<MajorCombinationResponseDTO> createMajorTimeTable(MajorTimeTableRequestDTO createDTO, Users users) {
 
         //3학년 1학기 4전공 선택 기준
         List<CurrentLecture> majorLectList = currentLectureRepository.findCurrentLectureByDepartmentAndGrade(users.getDepartment(), users.getGrade());
@@ -101,11 +101,9 @@ public class TimeTableService {
 
         generateCombinations(majorLectDetailList, 0, lectDetailList, timeTable, createDTO.majorCount() + requiredLectDetailList.size());
         result = TimeTableResponseDTO.fromList(timeTable);
-        System.out.println("전공 강의 조합 개수 : " + timeTable.size());
 
-        List<TimeTableResponseDTO> result1 = createTimeTable(createDTO, result);
 
-        return calculateMajorCombinations(result1);
+        return calculateMajorCombinations(result);
     }
 
     //시간대 벤 로직
@@ -144,26 +142,57 @@ public class TimeTableService {
             combinationCounts.merge(sbjNames, 1, Integer::sum);
         }
 
-        return combinationCounts.entrySet().stream()
-                .map(entry -> new MajorCombinationResponseDTO(entry.getKey(), entry.getValue()))
+        // 중복되지 않는 조합만 리스트로 변환
+        return combinationCounts.keySet().stream()
+                .map(MajorCombinationResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
-    public List<TimeTableResponseDTO> createTimeTable(TimeTableRequestDTO createDTO, List<TimeTableResponseDTO> majorTimetable) {
+    public List<TimeTableResponseDTO> createTimeTable(TimeTableRequestDTO createDTO) {
 
         List<CurrentLecture> entireLect = currentLectureRepository.findLectByCmpDiv("교선");
         List<CurrentLectureResponseDTO> entireLectList = CurrentLectureConverter.toCurrentLectureDtoList(entireLect);
 
+        Set<String> majorSet = new HashSet<>();
+        List<CurrentLecture> majorList = new ArrayList<>();
+
+        for (List<String> majors : createDTO.majorList()){
+            majorSet.addAll(majors);
+        }
+
+        for (String majorName : majorSet){
+            majorList.addAll(currentLectureRepository.findCurrentLecturesByCode(majorName));
+        }
+
+        List<CurrentLectureResponseDTO> majorLectDetailList = CurrentLectureConverter.toCurrentLectureDtoList(majorList);
+
+
         List<CurrentLectureResponseDTO> lectDetailList = new ArrayList<>();
+        List<List<CurrentLectureResponseDTO>> majorTimeTable = new ArrayList<>();
         List<List<CurrentLectureResponseDTO>> timeTable = new ArrayList<>();
         List<TimeTableResponseDTO> result;
 
         entireLectList = removeLecturesInImpossibleTimeZones(entireLectList, createDTO.impossibleTimeZone());
+
+        //임의 교양 리스트 생성
         Collections.shuffle(entireLectList);
         List<CurrentLectureResponseDTO> randomList = entireLectList.subList(0,10);
 
-        for(TimeTableResponseDTO lect : majorTimetable){
-            generateCombinations1212(randomList, 0, lect.timeTable(), timeTable, createDTO.maxGPA());
+        List<CurrentLecture> requiredLectList = new ArrayList<>();
+        for( String lect : createDTO.requiredLect() ){
+            requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lect));
+        }
+
+        List<CurrentLectureResponseDTO> requiredLectDetailList = CurrentLectureConverter.toCurrentLectureDtoList(requiredLectList);
+
+        //필수로 들어야할 강의 우선 조합
+        generateCombinations(requiredLectDetailList, 0, lectDetailList, majorTimeTable, requiredLectDetailList.size());
+
+        generateCombinations(majorLectDetailList, 0, lectDetailList, majorTimeTable, createDTO.majorCount() + requiredLectDetailList.size());
+        result = TimeTableResponseDTO.fromList(timeTable);
+
+        for(List<CurrentLectureResponseDTO> lect : majorTimeTable){
+            generateCombinations1212(randomList, 0, lect, majorTimeTable, createDTO.GPA()-createDTO.cyberCount()*3);
         }
 
         result = TimeTableResponseDTO.fromList(timeTable);
