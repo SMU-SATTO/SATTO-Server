@@ -42,7 +42,7 @@ public class AuthenticationService {
                 .nickname(request.getNickname())
                 .department(request.getDepartment())
                 .grade(request.getGrade())
-                .isPublic(request.getIsPublic())
+                .isPublic(request.isPublic())
                 .role(Role.USER)
                 .build();
         var savedUser = usersRepository.save(user);
