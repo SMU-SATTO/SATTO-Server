@@ -101,13 +101,22 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Users updateAccount(UsersRequestDTO.UpdateUserDTO updateUserDTO, Long userId) {
         Users user = usersRepository.findById(userId).orElseThrow();
-        user.setName(updateUserDTO.getName());
-        user.setNickname(updateUserDTO.getNickname());
-        user.setProfileImg(updateUserDTO.getProfileImg());
-        user.setDepartment(updateUserDTO.getDepartment());
+
+        if (!updateUserDTO.getName().equals(user.getName())) {
+            user.setName(updateUserDTO.getName());
+        }
+        if (!updateUserDTO.getNickname().equals(user.getNickname())) {
+            user.setNickname(updateUserDTO.getNickname());
+        }
+        if (!updateUserDTO.getDepartment().equals(user.getDepartment())) {
+            user.setDepartment(updateUserDTO.getDepartment());
+        }
+        if (updateUserDTO.getGrade() != user.getGrade()) {
+            user.setGrade(updateUserDTO.getGrade());
+        }
         usersRepository.save(user);
         return user;
-    }
+}
 
     @Override
     public boolean emailDuplicate(String email) {
