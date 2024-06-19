@@ -1,18 +1,13 @@
 package com.example.satto.domain.timeTable.controller;
 
-import com.example.satto.domain.currentLecture.dto.CurrentLectureListResponseDTO;
-import com.example.satto.domain.timeTable.dto.MajorCombinationResponseDTO;
-import com.example.satto.domain.timeTable.dto.MajorTimeTableRequestDTO;
-import com.example.satto.domain.timeTable.dto.TimeTableRequestDTO;
-import com.example.satto.domain.timeTable.dto.TimeTableResponseDTO;
+import com.example.satto.domain.timeTable.dto.*;
 import com.example.satto.domain.timeTable.service.TimeTableService;
+import com.example.satto.domain.timeTableLecture.service.TimeTableLectureService;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.global.common.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,16 +17,34 @@ import java.util.List;
 public class TimeTableController {
 
     private final TimeTableService timeTableService;
+    private final TimeTableLectureService timeTableLectureService;
 
     @PostMapping
-    public BaseResponse<List<MajorCombinationResponseDTO>> createMajorTimeTable(MajorTimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
-        List<MajorCombinationResponseDTO> result = timeTableService.createMajorTimeTable(createDTO, users);
+    public BaseResponse<List<TimeTableResponseDTO.MajorCombinationResponseDTO>> createMajorTimeTable(MajorTimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
+        List<TimeTableResponseDTO.MajorCombinationResponseDTO> result = timeTableService.createMajorTimeTable(createDTO, users);
         return BaseResponse.onSuccess(result);
     }
 
     @PostMapping("/auto")
-    public BaseResponse<List<TimeTableResponseDTO>> createTimeTable(TimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
-        List<TimeTableResponseDTO> result = timeTableService.createTimeTable(createDTO);
+    public BaseResponse<List<TimeTableResponseDTO.EntireTimeTableResponseDTO>> createTimeTable(EntireTimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
+        List<TimeTableResponseDTO.EntireTimeTableResponseDTO> result = timeTableService.createTimeTable(createDTO);
         return BaseResponse.onSuccess(result);
+    }
+
+    @PostMapping("/select")
+    public BaseResponse<String> selectTimeTable(TimeTableSelectRequestDTO selectDTO, @AuthenticationPrincipal Users users){
+        Long timeTableId = timeTableService.createTimeTable(selectDTO,users);
+        timeTableLectureService.addLect(selectDTO.codeSectionList(),timeTableId);
+        return BaseResponse.onSuccess("성공");
+    }
+
+    @GetMapping("/List")
+    public BaseResponse<List<TimeTableResponseDTO.timeTableListDTO>> getTimeTableList(@AuthenticationPrincipal Users users){
+        return BaseResponse.onSuccess(timeTableService.getTimeTableList(users));
+    }
+
+    @GetMapping("/{timeTableId}")
+    public BaseResponse<TimeTableResponseDTO.SelectTimeTableResponseDTO> getTimeTable(@PathVariable(name = "timeTableId") Long timeTableId){
+        return BaseResponse.onSuccess(timeTableService.getTimeTable(timeTableId));
     }
 }

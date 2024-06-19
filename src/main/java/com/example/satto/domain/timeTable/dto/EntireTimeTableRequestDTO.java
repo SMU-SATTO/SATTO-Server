@@ -2,7 +2,7 @@ package com.example.satto.domain.timeTable.dto;
 
 import java.util.List;
 
-public record TimeTableRequestDTO(
+public record EntireTimeTableRequestDTO(
         int GPA,
         List<String> requiredLect,
         int majorCount,
