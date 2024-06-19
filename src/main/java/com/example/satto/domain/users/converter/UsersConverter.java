@@ -16,4 +16,14 @@ public class UsersConverter {
                 .createdAt(user.getCreatedAt())
                 .build();
     }
+
+    public static UsersResponseDTO.ExistUserDTO toUserShowDTO(Users user) {
+        return UsersResponseDTO.ExistUserDTO.builder()
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .department(user.getDepartment())
+                .grade(user.getGrade())
+                .build();
+
+    }
 }

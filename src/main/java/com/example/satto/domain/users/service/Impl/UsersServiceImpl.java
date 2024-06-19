@@ -102,18 +102,11 @@ public class UsersServiceImpl implements UsersService {
     public Users updateAccount(UsersRequestDTO.UpdateUserDTO updateUserDTO, Long userId) {
         Users user = usersRepository.findById(userId).orElseThrow();
 
-        if (!updateUserDTO.getName().equals(user.getName())) {
-            user.setName(updateUserDTO.getName());
-        }
-        if (!updateUserDTO.getNickname().equals(user.getNickname())) {
-            user.setNickname(updateUserDTO.getNickname());
-        }
-        if (!updateUserDTO.getDepartment().equals(user.getDepartment())) {
-            user.setDepartment(updateUserDTO.getDepartment());
-        }
-        if (updateUserDTO.getGrade() != user.getGrade()) {
-            user.setGrade(updateUserDTO.getGrade());
-        }
+        user.setName(updateUserDTO.getName());
+        user.setNickname(updateUserDTO.getNickname());
+        user.setDepartment(updateUserDTO.getDepartment());
+        user.setGrade(updateUserDTO.getGrade());
+
         usersRepository.save(user);
         return user;
 }
@@ -150,6 +143,20 @@ public class UsersServiceImpl implements UsersService {
         followRepository.deleteByFollowerId(user);
 
         usersRepository.deleteById(userId);
+
+    }
+
+    @Override
+    public Users beforeUpdateInformation(Long userId) {
+        Users user = usersRepository.findById(userId).orElseThrow();
+
+        Users information = new Users();
+        information.setName(user.getUsername());
+        information.setNickname(user.getNickname());
+        information.setDepartment(user.getDepartment());
+        information.setGrade(user.getGrade());
+
+        return information;
 
     }
 

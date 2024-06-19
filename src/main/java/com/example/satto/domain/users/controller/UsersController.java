@@ -74,8 +74,18 @@ public class UsersController {
         return BaseResponse.onSuccess(usersService.userInformation(userId));
     }
 
+    // 개인정보 수정 클릭하면 수정가능한 정보들이 보임
+    @Operation(summary = "수정 가능한 개인정보 조회", description = "개인정보 수정으로 진입하면 수정가능한 정보들을 우선 보여준다.")
+    @GetMapping("account/present")
+    public BaseResponse<UsersResponseDTO.ExistUserDTO> updateInformation(@AuthenticationPrincipal Users user) {
+        Long userId = user.getUserId();
+        Users information = usersService.beforeUpdateInformation(userId);
+        return BaseResponse.onSuccess(UsersConverter.toUserShowDTO(information));
+    }
+
+
     // 개인정보 수정
-    @Operation(summary = "개인정보 수정")
+    @Operation(summary = "개인정보 수정 요청", description = "개인정보 수정 요청을 보낸다.")
     @PatchMapping("account/update")
     public BaseResponse<UsersResponseDTO.UserPreviewDTO> updateAccount(@RequestBody UsersRequestDTO.UpdateUserDTO updateUserDTO, @AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
