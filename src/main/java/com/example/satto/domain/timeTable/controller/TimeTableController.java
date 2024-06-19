@@ -38,7 +38,7 @@ public class TimeTableController {
         return BaseResponse.onSuccess("성공");
     }
 
-    @GetMapping("/List")
+    @GetMapping("/list")
     public BaseResponse<List<TimeTableResponseDTO.timeTableListDTO>> getTimeTableList(@AuthenticationPrincipal Users users){
         return BaseResponse.onSuccess(timeTableService.getTimeTableList(users));
     }
