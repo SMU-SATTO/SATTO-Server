@@ -22,4 +22,14 @@ public class UsersResponseDTO {
         private LocalDateTime updateAt;
     }
 
+    @Getter
+    @Builder
+    public static class ExistUserDTO {
+        private String name;
+        private String nickname;
+        private String department;
+        private int grade;
+    }
+
+
 }
