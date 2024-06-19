@@ -41,6 +41,7 @@ public class AuthenticationService {
                 .name(request.getName())
                 .nickname(request.getNickname())
                 .department(request.getDepartment())
+                .grade(request.getGrade())
                 .isPublic(request.getIsPublic())
                 .role(Role.USER)
                 .build();
