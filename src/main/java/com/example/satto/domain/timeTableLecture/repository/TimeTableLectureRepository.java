@@ -17,5 +17,6 @@ public interface TimeTableLectureRepository extends JpaRepository<TimeTableLectu
     TimeTableLecture findTimeTableLectureByTimeTableIdAndCodeSection(@Param("timeTableId")Long timeTableId,
                                                                      @Param("codeSection") String codeSection);
 
-    List<TimeTableLecture> findTimeTableLecturesByTimeTableId(Long timeTableId);
+    @Query("select l from TimeTableLecture l where l.timeTable.timetableId = :timeTableId")
+    List<TimeTableLecture> findTimeTableLecturesByTimeTableId(@Param("timeTableId")Long timeTableId);
 }
