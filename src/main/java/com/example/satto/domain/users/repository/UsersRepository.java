@@ -14,12 +14,12 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     Optional<Users> findByEmail(String email);
 
-    Boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
     Users findByPhotoContest(PhotoContest photoContest);
 
     boolean existsByNickname(String nickname);
 
-    Boolean existsByStudentId(int studentId);
+    boolean existsByStudentId(int studentId);
 }
 
