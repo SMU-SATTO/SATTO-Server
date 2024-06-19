@@ -8,6 +8,7 @@ import com.example.satto.domain.users.dto.UsersResponseDTO;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.service.UsersService;
 import com.example.satto.global.common.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class UsersController {
     private final FileService fileService;
 
     // email 중복 확인
+    @Operation(summary = "email 중복 확인")
     @GetMapping("/id/{email}")
     public BaseResponse<?> emailDuplicate(@PathVariable("email") String email) {
         if (usersService.emailDuplicate(email)) {
@@ -35,6 +37,7 @@ public class UsersController {
     }
 
     // nickname 중복 확인
+    @Operation(summary = "nickname 중복 확인")
     @GetMapping("/id/nickname/{nickname}")
     public BaseResponse<?> nicknameDuplicate(@PathVariable("nickname") String nickname) {
         if (usersService.nicknameDuplicate(nickname)) {
@@ -64,6 +67,7 @@ public class UsersController {
 
 
     // 사용자 정보 조회
+    @Operation(summary = "test용 사용자의 모든 정보 조회")
     @GetMapping("")
     public BaseResponse<?> userInformation(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -71,6 +75,7 @@ public class UsersController {
     }
 
     // 개인정보 수정
+    @Operation(summary = "개인정보 수정")
     @PatchMapping("account/update")
     public BaseResponse<UsersResponseDTO.UserPreviewDTO> updateAccount(@RequestBody UsersRequestDTO.UpdateUserDTO updateUserDTO, @AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -79,6 +84,7 @@ public class UsersController {
     }
 
     // 계정 비공개 설정
+    @Operation(summary = "계정 비공개 설정", description = "숫자 1 은 공개, 0 은 비공개")
     @PatchMapping("account/private")
     public BaseResponse<?> privateAccount(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -87,6 +93,7 @@ public class UsersController {
     }
 
     // 계정 공개 설정
+    @Operation(summary = "계정 공개 설정", description = "숫자 1 은 공개, 0 은 비공개")
     @PatchMapping("account/public")
     public BaseResponse<?> publicAccount(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -94,6 +101,7 @@ public class UsersController {
         return BaseResponse.onSuccess("공개 설정 완료");
     }
 
+    @Operation(summary = "회원 탈퇴")
     @DeleteMapping("account/withdrawal")
     public BaseResponse<?> withdrawal(@AuthenticationPrincipal Users user) {
 //        Long userId = user.getUserId();

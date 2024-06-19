@@ -4,6 +4,7 @@ import com.example.satto.domain.mail.dto.EmailRequestDTO;
 import com.example.satto.domain.mail.service.EmailService;
 import com.example.satto.domain.mail.service.EmailServiceImpl;
 import com.example.satto.global.common.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,8 @@ public class MailController {
     private final EmailService emailService;
 
     // 인증번호 전송
+    @Operation(summary = "인증번호 전송",
+            description = "학번을 입력하면 해당 샘물 이메일 주소로 인증번호가 전송된다.")
     @PostMapping("/mail/check")
     public BaseResponse<Object> emailConfirm(@RequestBody EmailRequestDTO.EmailCheckRequest emailCheckRequest) throws Exception {
         String email = emailCheckRequest.getStudentId()+"@sangmyung.kr";
@@ -34,6 +37,8 @@ public class MailController {
     }
 
     // 인증번호 확인
+    @Operation(summary = "인증번호 확입",
+            description = "이메일로 받은 인증번호를 입력한다.")
     @PostMapping("/mail/authentication")
     public BaseResponse<Object> emailAuthentication(@RequestBody EmailRequestDTO.EmailAuthRequest emailAuthRequest) {
         if (emailAuthRequest.getCertificationNum().equals(EmailServiceImpl.ePw)){
