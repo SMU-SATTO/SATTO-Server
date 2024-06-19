@@ -11,7 +11,8 @@ public class UsersConverter {
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .department(user.getDepartment())
-                .profileImg(user.getProfileImg())
+                .grade(user.getGrade())
+//                .profileImg(user.getProfileImg())
                 .updateAt(user.getUpdatedAt())
                 .createdAt(user.getCreatedAt())
                 .build();
