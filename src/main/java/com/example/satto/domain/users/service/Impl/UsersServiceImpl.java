@@ -52,8 +52,6 @@ public class UsersServiceImpl implements UsersService {
                     followerList.add(followerId.getFollowerId().getEmail());
                 }
             }
-
-
         }
         return followerList;
 

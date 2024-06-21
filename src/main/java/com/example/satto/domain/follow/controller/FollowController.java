@@ -24,8 +24,7 @@ public class FollowController {
     @PostMapping("/request/{followingId}")
     public BaseResponse<Object> followRequest(@PathVariable("followingId") String followingId, @AuthenticationPrincipal Users user) {
         String studentId = user.getStudentId();
-        followService.followRequest(followingId, studentId);
-        return BaseResponse.onSuccess("팔로우 요청 성공");
+        return followService.followRequest(followingId, studentId);
     }
 
     // 팔로우 수락
@@ -34,8 +33,7 @@ public class FollowController {
     @PostMapping("/accept/{followerId}")
     public BaseResponse<Object> acceptFollower(@PathVariable("followerId") String followerId, @AuthenticationPrincipal Users user) {
         String studentId = user.getStudentId();
-        followService.acceptFollower(followerId, studentId);
-        return BaseResponse.onSuccess("팔로우 수락");
+        return followService.acceptFollower(followerId, studentId);
     }
 
     // 언팔로우
@@ -44,8 +42,8 @@ public class FollowController {
     @DeleteMapping("/unfollow/{followerId}")
     public BaseResponse<Object> unFollow(@PathVariable("followerId") String followerId, @AuthenticationPrincipal Users user) {
         String studentId = user.getStudentId();
-        followService.unFollower(followerId, studentId);
-        return BaseResponse.onSuccess("언팔로우");
+        return followService.unFollower(followerId, studentId);
+
     }
 
     // 언팔로잉
@@ -54,8 +52,8 @@ public class FollowController {
     @DeleteMapping("/unfollowing/{followingId}")
     public BaseResponse<Object> unFollowing(@PathVariable("followingId") String followingId, @AuthenticationPrincipal Users user) {
         String studentId = user.getStudentId();
-        followService.unFollowing(followingId, studentId);
-        return BaseResponse.onSuccess("언팔로잉");
+        return followService.unFollowing(followingId, studentId);
+
     }
 
 
