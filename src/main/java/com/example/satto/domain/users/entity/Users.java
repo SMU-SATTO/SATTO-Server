@@ -46,7 +46,7 @@ public class Users extends BaseEntity implements UserDetails {
     private String department;
 
     @Column(name = "student_id", nullable = false)
-    private int studentId;
+    private String studentId;
 
     @Column(nullable = false)
     private String email;

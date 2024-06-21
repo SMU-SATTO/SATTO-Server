@@ -20,6 +20,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     boolean existsByNickname(String nickname);
 
-    boolean existsByStudentId(int studentId);
+    boolean existsByStudentId(String studentId);
 }
 

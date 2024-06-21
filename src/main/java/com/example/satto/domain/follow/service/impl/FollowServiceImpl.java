@@ -16,17 +16,17 @@ public class FollowServiceImpl implements FollowService {
     private final FollowRepository followRepository;
 
     @Override
-    public BaseResponse<String> followRequest(Long followingId, Long userId) {
-        if (followRepository.existsByFollowerIdUserIdAndFollowingIdUserId(userId, followingId) &&
-                followRepository.existsByFollowerIdUserIdAndFollowingIdUserIdAndRequest(userId, followingId, 1)) {
+    public BaseResponse<String> followRequest(String followingId, String studentId) {
+        if (followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId) &&
+                followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(studentId, followingId, 1)) {
 
             return BaseResponse.onSuccess("이미 팔로우");
         } else {
             Users followerUser = new Users();
-            followerUser.setUserId(userId);
+            followerUser.setStudentId(studentId);
 
             Users followingUser = new Users();
-            followingUser.setUserId(followingId);
+            followingUser.setStudentId(followingId);
 
             Follow follow = new Follow();
             follow.setFollowerId(followerUser);
@@ -39,9 +39,9 @@ public class FollowServiceImpl implements FollowService {
 
     @Transactional
     @Override
-    public BaseResponse<?> acceptFollower(Long followerId, Long userId) {
+    public BaseResponse<?> acceptFollower(String followerId, String studentId) {
 
-        Follow followerRequest = followRepository.findByFollowerIdUserIdAndFollowingIdUserIdAndRequest(followerId, userId, 1);
+        Follow followerRequest = followRepository.findByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(followerId, studentId, 1);
         if (followerRequest != null){
             followerRequest.setRequest(2);
                 followRepository.save(followerRequest);
@@ -52,9 +52,9 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public void unFollower(Long followerId, Long userId) {
+    public void unFollower(String followerId, String studentId) {
 
-        Follow follow = followRepository.findByFollowerIdUserIdAndFollowingIdUserId(followerId, userId);
+        Follow follow = followRepository.findByFollowerIdStudentIdAndFollowingIdStudentId(followerId, studentId);
         if (follow != null) {
             followRepository.delete(follow);
         } else {
@@ -63,8 +63,8 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public void unFollowing(Long followingId, Long userId) {
-        Follow follow = followRepository.findByFollowerIdUserIdAndFollowingIdUserId(userId, followingId);
+    public void unFollowing(String followingId, String studentId) {
+        Follow follow = followRepository.findByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId);
         if (follow != null) {
             followRepository.delete(follow);
         } else {

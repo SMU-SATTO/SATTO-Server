@@ -29,7 +29,7 @@ public class MailController {
     @PostMapping("/mail/check")
     public BaseResponse<Object> emailConfirm(@RequestBody EmailRequestDTO.EmailCheckRequest emailCheckRequest) throws Exception {
 
-        if (usersService.studetIdDuplicate(emailCheckRequest)){
+        if (usersService.studentIdDuplicate(emailCheckRequest)){
             return BaseResponse.onFailure("해당 학번으로 이미 가입하셨습니다.");
         } else {
 
