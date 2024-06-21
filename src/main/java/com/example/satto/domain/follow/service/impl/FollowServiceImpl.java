@@ -4,6 +4,7 @@ import com.example.satto.domain.follow.entity.Follow;
 import com.example.satto.domain.follow.repository.FollowRepository;
 import com.example.satto.domain.follow.service.FollowService;
 import com.example.satto.domain.users.entity.Users;
+import com.example.satto.domain.users.repository.UsersRepository;
 import com.example.satto.global.common.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,25 +15,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class FollowServiceImpl implements FollowService {
 
     private final FollowRepository followRepository;
+    private final UsersRepository usersRepository;
 
     @Override
     public BaseResponse<String> followRequest(String followingId, String studentId) {
         if (followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId) &&
                 followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(studentId, followingId, 1)) {
-
             return BaseResponse.onSuccess("이미 팔로우");
         } else {
-            Users followerUser = new Users();
-            followerUser.setStudentId(studentId);
+            // Follower 사용자 조회
+            Users followerUser = usersRepository.findByStudentId(studentId);
+            if (followerUser == null) {
+                return BaseResponse.onFailure("Follower 사용자를 찾을 수 없습니다.");
+            }
 
-            Users followingUser = new Users();
-            followingUser.setStudentId(followingId);
+            // Following 사용자 조회
+            Users followingUser = usersRepository.findByStudentId(followingId);
+            if (followingUser == null) {
+                return BaseResponse.onFailure("Following 사용자를 찾을 수 없습니다.");
+            }
 
+            // Follow 엔티티 생성 및 저장
             Follow follow = new Follow();
             follow.setFollowerId(followerUser);
             follow.setFollowingId(followingUser);
             follow.setRequest(1);
             followRepository.save(follow);
+
         }
         return null;
     }
