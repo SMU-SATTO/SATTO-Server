@@ -3,22 +3,20 @@ package com.example.satto.domain.follow.repository;
 import com.example.satto.domain.follow.entity.Follow;
 import com.example.satto.domain.users.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
-    boolean existsByFollowerIdUserIdAndFollowingIdUserId(Long userId, Long followingId);
+    boolean existsByFollowerIdStudentIdAndFollowingIdStudentId(String studentId, String followingId);
 
-    boolean existsByFollowerIdUserIdAndFollowingIdUserIdAndRequest(Long userId, Long followingId, int i);
+    boolean existsByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(String studentId, String followingId, int i);
 
-    Follow findByFollowerIdUserIdAndFollowingIdUserIdAndRequest(Long followerId, Long userId, int i);
+    Follow findByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(String followerId, String studentId, int i);
 
-    Follow findByFollowerIdUserIdAndFollowingIdUserId(Long followerId, Long userId);
+    Follow findByFollowerIdStudentIdAndFollowingIdStudentId(String followerId, String studentId);
 
     @Transactional
-    void deleteByFollowingId(Users follwingId);
+    void deleteByFollowingId(Users followingId);
 
     @Transactional
     void deleteByFollowerId(Users followerId);

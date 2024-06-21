@@ -162,8 +162,8 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public boolean studetIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest) {
-        return usersRepository.existsByStudentId(Integer.parseInt(emailCheckRequest.getStudentId()));
+    public boolean studentIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest) {
+        return usersRepository.existsByStudentId(emailCheckRequest.getStudentId());
     }
 
 }

@@ -21,10 +21,10 @@ public class FollowController {
     // 팔로우 요청
     @Operation(summary = "팔로우 요청",
             description = "상대방 userId를 입력하여 팔로우 요청을 보낸다.")
-    @PostMapping("/request/{follwingId}")
-    public BaseResponse<Object> followRequest(@PathVariable("follwingId") Long followingId, @AuthenticationPrincipal Users user) {
-        Long userId = user.getUserId();
-        followService.followRequest(followingId, userId);
+    @PostMapping("/request/{followingId}")
+    public BaseResponse<Object> followRequest(@PathVariable("followingId") String followingId, @AuthenticationPrincipal Users user) {
+        String studentId = user.getStudentId();
+        followService.followRequest(followingId, studentId);
         return BaseResponse.onSuccess("팔로우 요청 성공");
     }
 
@@ -32,9 +32,9 @@ public class FollowController {
     @Operation(summary = "팔로우 수락",
             description = "상대방 userId를 입력하여 팔로우 수락")
     @PostMapping("/accept/{followerId}")
-    public BaseResponse<Object> acceptFollower(@PathVariable("followerId") Long followerId, @AuthenticationPrincipal Users user) {
-        Long userId = user.getUserId();
-        followService.acceptFollower(followerId, userId);
+    public BaseResponse<Object> acceptFollower(@PathVariable("followerId") String followerId, @AuthenticationPrincipal Users user) {
+        String studentId = user.getStudentId();
+        followService.acceptFollower(followerId, studentId);
         return BaseResponse.onSuccess("팔로우 수락");
     }
 
@@ -42,9 +42,9 @@ public class FollowController {
     @Operation(summary = "언팔로우",
             description = "상대방 userId를 입력하여 언팔로우 한다..")
     @DeleteMapping("/unfollow/{followerId}")
-    public BaseResponse<Object> unFollow(@PathVariable("followerId") Long followerId, @AuthenticationPrincipal Users user) {
-        Long userId = user.getUserId();
-        followService.unFollower(followerId, userId);
+    public BaseResponse<Object> unFollow(@PathVariable("followerId") String followerId, @AuthenticationPrincipal Users user) {
+        String studentId = user.getStudentId();
+        followService.unFollower(followerId, studentId);
         return BaseResponse.onSuccess("언팔로우");
     }
 
@@ -52,9 +52,9 @@ public class FollowController {
     @Operation(summary = "언팔로잉",
             description = "상대방 userId를 입력하여 언팔로잉 한다.")
     @DeleteMapping("/unfollowing/{followingId}")
-    public BaseResponse<Object> unFollowing(@PathVariable("followingId") Long followingId, @AuthenticationPrincipal Users user) {
-        Long userId = user.getUserId();
-        followService.unFollowing(followingId, userId);
+    public BaseResponse<Object> unFollowing(@PathVariable("followingId") String followingId, @AuthenticationPrincipal Users user) {
+        String studentId = user.getStudentId();
+        followService.unFollowing(followingId, studentId);
         return BaseResponse.onSuccess("언팔로잉");
     }
 

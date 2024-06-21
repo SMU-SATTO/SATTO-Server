@@ -5,12 +5,12 @@ import com.example.satto.global.common.BaseResponse;
 public interface FollowService {
 
 
-    BaseResponse<String> followRequest(Long followingId, Long userId);
+    BaseResponse<String> followRequest(String followingId, String userId);
 
-    BaseResponse<?> acceptFollower(Long followerId, Long userId);
+    BaseResponse<?> acceptFollower(String followerId, String userId);
 
 
-    void unFollower(Long followerId, Long userId);
+    void unFollower(String followerId, String studentId);
 
-    void unFollowing(Long followingId, Long userId);
+    void unFollowing(String followingId, String studentId);
 }

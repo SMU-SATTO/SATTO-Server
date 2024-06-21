@@ -31,5 +31,5 @@ public interface UsersService {
 
     Users beforeUpdateInformation(Long userId);
 
-    boolean studetIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest);
+    boolean studentIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest);
 }
