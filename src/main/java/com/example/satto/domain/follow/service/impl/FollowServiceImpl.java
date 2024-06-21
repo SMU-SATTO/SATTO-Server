@@ -18,10 +18,10 @@ public class FollowServiceImpl implements FollowService {
     private final UsersRepository usersRepository;
 
     @Override
-    public BaseResponse<String> followRequest(String followingId, String studentId) {
+    public BaseResponse<Object> followRequest(String followingId, String studentId) {
         if (followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId) &&
                 followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(studentId, followingId, 1)) {
-            return BaseResponse.onSuccess("이미 팔로우");
+            return BaseResponse.onSuccess("이미 Follow 요청을 보냈습니다.");
         } else {
             // Follower 사용자 조회
             Users followerUser = usersRepository.findByStudentId(studentId);
@@ -44,41 +44,51 @@ public class FollowServiceImpl implements FollowService {
             followRepository.save(follow);
 
         }
-        return null;
+        return BaseResponse.onSuccess("Follow 요청을 보냈습니다.");
     }
 
     @Transactional
     @Override
-    public BaseResponse<?> acceptFollower(String followerId, String studentId) {
+    public BaseResponse<Object> acceptFollower(String followerId, String studentId) {
 
         Follow followerRequest = followRepository.findByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(followerId, studentId, 1);
-        if (followerRequest != null){
+        boolean followerRequestExists = followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(followerId, studentId, 1);
+
+        if (followerRequestExists) {
             followerRequest.setRequest(2);
-                followRepository.save(followerRequest);
+            followRepository.save(followerRequest);
+            return BaseResponse.onSuccess("Follow 요청을 수락하였습니다.");
         } else {
-            return BaseResponse.onFailure("200", "요청 내역이 없습니다.", "");
+            return BaseResponse.onFailure("Follow 요청 내역이 없습니다.");
         }
-        return null;
+
     }
 
     @Override
-    public void unFollower(String followerId, String studentId) {
+    public BaseResponse<Object> unFollower(String followerId, String studentId) {
 
         Follow follow = followRepository.findByFollowerIdStudentIdAndFollowingIdStudentId(followerId, studentId);
-        if (follow != null) {
+        boolean followerExist = followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentId(followerId, studentId);
+
+        if (followerExist) {
             followRepository.delete(follow);
+            return BaseResponse.onSuccess("해당 Follower를 삭제하였습니다.");
         } else {
-            System.out.println("유저가 없습니다.");
+            return BaseResponse.onFailure("해당 Follower가 존재하지 않습니다.");
         }
     }
 
     @Override
-    public void unFollowing(String followingId, String studentId) {
+    public BaseResponse<Object> unFollowing(String followingId, String studentId) {
         Follow follow = followRepository.findByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId);
-        if (follow != null) {
+        boolean followingExist = followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId);
+        System.out.println("어떤가요"+followingExist);
+
+        if (followingExist) {
             followRepository.delete(follow);
+            return BaseResponse.onSuccess("해당 Following을 삭제하였습니다.");
         } else {
-            System.out.println("유저가 없습니다");
+            return BaseResponse.onFailure("해당 Following이 존재하지 않습니다.");
         }
     }
 
