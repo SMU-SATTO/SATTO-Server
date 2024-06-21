@@ -37,6 +37,7 @@ public class FollowServiceImpl implements FollowService {
 
             // Follow 엔티티 생성 및 저장
             Follow follow = new Follow();
+
             follow.setFollowerId(followerUser);
             follow.setFollowingId(followingUser);
             follow.setRequest(1);

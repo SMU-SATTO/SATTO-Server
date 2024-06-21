@@ -48,7 +48,7 @@ public class UsersServiceImpl implements UsersService {
             Users user = optionalUser.get();
 
             for (Follow followerId : user.getFollowingList()) {
-                if ((followerId.getRequest() == 2) && (!followerId.getFollowingId().equals(user.getUserId()))) {
+                if ((followerId.getRequest() == 2) && (!followerId.getFollowingId().equals(user.getStudentId()))) {
                     followerList.add(followerId.getFollowerId().getEmail());
                 }
             }
@@ -68,7 +68,7 @@ public class UsersServiceImpl implements UsersService {
             Users user = optionalUser.get();
 
             for (Follow followingId : user.getFollowerList()) {
-                if ((followingId.getRequest() == 2) && (!followingId.getFollowerId().equals(user.getUserId()))) {
+                if ((followingId.getRequest() == 2) && (!followingId.getFollowerId().equals(user.getStudentId()))) {
                     followingList.add(followingId.getFollowingId().getEmail());
                 }
             }
