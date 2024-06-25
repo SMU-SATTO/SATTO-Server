@@ -1,4 +1,4 @@
-package com.example.satto.domain.follow.service.impl;
+package com.example.satto.domain.follow.service.Impl;
 
 import com.example.satto.domain.follow.entity.Follow;
 import com.example.satto.domain.follow.repository.FollowRepository;

@@ -24,6 +24,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // User 에러
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER400", "사용자가 존재하지 않습니다."),
 
+    // Follow 에러
+    _NOT_FOUND_FOLLOWING_LIST(HttpStatus.NOT_FOUND, "FOLLOW400", "사용자가 존재하지 않습니다."),
+
+
     // Event 에러
     _NOT_FOUND_EVENT(HttpStatus.NOT_FOUND, "EVENT400", "해당 이벤트가 존재하지 않습니다."),
 

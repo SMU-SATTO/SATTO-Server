@@ -1,5 +1,6 @@
-package com.example.satto.domain.mail.service;
+package com.example.satto.domain.mail.service.Impl;
 
+import com.example.satto.domain.mail.service.EmailService;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.MailException;
