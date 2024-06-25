@@ -8,6 +8,9 @@ import com.example.satto.domain.users.dto.UsersRequestDTO;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.repository.UsersRepository;
 import com.example.satto.domain.users.service.UsersService;
+import com.example.satto.global.common.code.status.ErrorStatus;
+import com.example.satto.global.common.exception.handler.FollowHandler;
+import com.example.satto.global.common.exception.handler.UsersHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -52,8 +55,11 @@ public class UsersServiceImpl implements UsersService {
                     followerList.add(followerId.getFollowerId().getEmail());
                 }
             }
+            return followerList;
+        } else {
+            return new UsersHandler(ErrorStatus._NOT_FOUND_USER);
         }
-        return followerList;
+
 
     }
 
@@ -72,15 +78,13 @@ public class UsersServiceImpl implements UsersService {
             }
             return followingList;
         } else {
-            System.out.println("사용자가 존재 x");
+            return new UsersHandler(ErrorStatus._NOT_FOUND_USER);
         }
-        return null;
     }
 
     @Override
     public Users userInformation(Long userId) {
-        Users user = usersRepository.findById(userId).orElseThrow();
-        return user;
+        return usersRepository.findById(userId).orElseThrow();
     }
 
     @Override
@@ -140,7 +144,6 @@ public class UsersServiceImpl implements UsersService {
         Long userId = user.getUserId();
         followRepository.deleteByFollowingId(user);
         followRepository.deleteByFollowerId(user);
-
         usersRepository.deleteById(userId);
 
     }

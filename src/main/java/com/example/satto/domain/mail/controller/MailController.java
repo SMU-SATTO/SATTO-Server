@@ -2,7 +2,7 @@ package com.example.satto.domain.mail.controller;
 
 import com.example.satto.domain.mail.dto.EmailRequestDTO;
 import com.example.satto.domain.mail.service.EmailService;
-import com.example.satto.domain.mail.service.EmailServiceImpl;
+import com.example.satto.domain.mail.service.Impl.EmailServiceImpl;
 import com.example.satto.domain.users.service.UsersService;
 import com.example.satto.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
