@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public record CurrentLectureResponseDTO(
         String department,
         String code,
+        String codeSection,
         String lectName,
         String professor,
         String lectTime,

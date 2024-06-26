@@ -134,20 +134,20 @@ public class TimeTableService {
 
     //전공 조합의 개수 계산
     public List<TimeTableResponseDTO.MajorCombinationResponseDTO> calculateMajorCombinations(List<TimeTableResponseDTO.EntireTimeTableResponseDTO> result) {
-        Map<Set<String>, Integer> combinationCounts = new HashMap<>();
+        Map<Set<TimeTableResponseDTO.LectureCombination>, Integer> combinationCounts = new HashMap<>();
 
         for (TimeTableResponseDTO.EntireTimeTableResponseDTO data : result) {
-            Set<String> sbjNames = data.timeTable().stream()
+            Set<TimeTableResponseDTO.LectureCombination> sbjCombinations = data.timeTable().stream()
                     .filter(lecture -> "1전심".equals(lecture.cmpDiv()) || "1전선".equals(lecture.cmpDiv()))
-                    .map(CurrentLectureResponseDTO::lectName)
+                    .map(lecture -> new TimeTableResponseDTO.LectureCombination(lecture.lectName(), lecture.code()))
                     .collect(Collectors.toSet());
 
-            combinationCounts.merge(sbjNames, 1, Integer::sum);
+            combinationCounts.merge(sbjCombinations, 1, Integer::sum);
         }
 
         // 중복되지 않는 조합만 리스트로 변환
         return combinationCounts.keySet().stream()
-                .map(TimeTableResponseDTO.MajorCombinationResponseDTO::new)
+                .map(sbjCombinations -> new TimeTableResponseDTO.MajorCombinationResponseDTO(sbjCombinations))
                 .collect(Collectors.toList());
     }
 
@@ -198,7 +198,7 @@ public class TimeTableService {
         result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
 
         for(List<CurrentLectureResponseDTO> lect : majorTimeTable){
-            generateCombinations1212(entireLectList, 0, lect, majorTimeTable, createDTO.GPA()-createDTO.cyberCount()*3);
+            generateCombinations1212(entireLectList, 0, lect, timeTable, createDTO.GPA()-createDTO.cyberCount()*3);
         }
 
         result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
@@ -213,9 +213,35 @@ public class TimeTableService {
     }
 
     public Long createTimeTable(TimeTableSelectRequestDTO selectRequestDTO, Users users){
-        TimeTable timeTable = timeTableRepository.save(selectRequestDTO.to(users));
 
+        List<TimeTable> timeTables = timeTableRepository.findAllByUserId(users.getUserId());
+
+        if (selectRequestDTO.isRepresented()) {
+            for (TimeTable tt : timeTables) {
+                if (tt.getSemesterYear().equals(selectRequestDTO.semesterYear()) && tt.getIsRepresented()) {
+                    throw new IllegalStateException("이미 해당 학기의 대표 시간표가 존재합니다.");
+                }
+            }
+        }
+        TimeTable timeTable = timeTableRepository.save(selectRequestDTO.to(users));
         return timeTable.getTimetableId();
+    }
+
+    public TimeTableResponseDTO.SelectTimeTableResponseDTO getRepresentTimeTable(Users users) {
+        // 가장 최근 생성된 대표 시간표를 가져옴
+        TimeTable timeTable = timeTableRepository.findLatestRepresentedTimeTableByUserId(users.getUserId());
+        if (timeTable == null) {
+            throw new IllegalStateException("대표 시간표가 존재하지 않습니다.");
+        }
+
+        List<TimeTableLecture> lectures = timeTableLectureRepository.findTimeTableLecturesByTimeTableId(timeTable.getTimetableId());
+        List<CurrentLecture> currentLectures = new ArrayList<>();
+        for (TimeTableLecture t : lectures) {
+            currentLectures.add(t.getCurrentLecture());
+        }
+
+        List<CurrentLectureResponseDTO> timeTableLectures = CurrentLectureConverter.toCurrentLectureDtoList(currentLectures);
+        return TimeTableResponseDTO.SelectTimeTableResponseDTO.from(timeTableLectures, timeTable);
     }
 
     public List<TimeTableResponseDTO.timeTableListDTO> getTimeTableList(Users users){
@@ -232,6 +258,35 @@ public class TimeTableService {
         }
         List<CurrentLectureResponseDTO> timeTableLectures = CurrentLectureConverter.toCurrentLectureDtoList(currentLectures);
         return TimeTableResponseDTO.SelectTimeTableResponseDTO.from(timeTableLectures,timeTable);
+    }
+
+    public void updateTimeTableIsPublic(Long timeTableId, updateTimeTableRequestDTO isPublic){
+        TimeTable timeTable = timeTableRepository.findById(timeTableId).orElseThrow();
+        timeTable.updateIsPublic(isPublic.state());
+        timeTableRepository.save(timeTable);
+    }
+
+    public void updateTimeTableIsRepresented(Long timeTableId, updateTimeTableRequestDTO isRepresented, Users users){
+        TimeTable timeTable = timeTableRepository.findById(timeTableId).orElseThrow();
+        List<TimeTable> timeTables = timeTableRepository.findAllByUserId(users.getUserId());
+
+        if (isRepresented.state()) {
+            for (TimeTable tt : timeTables) {
+                if (tt.getSemesterYear().equals(timeTable.getSemesterYear()) && tt.getIsRepresented()) {
+                    throw new IllegalStateException("이미 해당 학기의 대표 시간표가 존재합니다.");
+                }
+            }
+        }
+
+        timeTable.updateIdRepresented(isRepresented.state());
+        timeTableRepository.save(timeTable);
+    }
+
+    public void deleteTimeTable(Long timeTableId){
+        List<TimeTableLecture> timeTableLectures = timeTableLectureRepository.findTimeTableLecturesByTimeTableId(timeTableId);
+        TimeTable timeTable = timeTableRepository.findById(timeTableId).orElseThrow();
+        timeTableLectureRepository.deleteAll(timeTableLectures);
+        timeTableRepository.delete(timeTable);
     }
 
     //시간표 조합 알고리즘

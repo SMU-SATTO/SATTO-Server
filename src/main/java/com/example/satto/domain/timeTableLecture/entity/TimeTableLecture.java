@@ -3,10 +3,15 @@ package com.example.satto.domain.timeTableLecture.entity;
 import com.example.satto.domain.currentLecture.entity.CurrentLecture;
 import com.example.satto.domain.timeTable.entity.TimeTable;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class TimeTableLecture {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

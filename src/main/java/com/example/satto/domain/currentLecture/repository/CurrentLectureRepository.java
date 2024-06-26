@@ -23,7 +23,10 @@ public interface CurrentLectureRepository extends JpaRepository<CurrentLecture, 
             "and l.isCyber = 'N' " + //E러닝 강의 제외
             "and l.cmpDiv = :cmpdiv   ")
     List<CurrentLecture> findLectByCmpDiv(@Param("cmpdiv") String cmpDiv);
-    CurrentLecture findCurrentLectureByCodeSection(String codeSection);
+
+
+    @Query("select l from CurrentLecture l where l.codeSection = :codeSection")
+    CurrentLecture findCurrentLectureByCodeSection(@Param("codeSection") String codeSection);
 
     List<CurrentLecture> findCurrentLecturesByCode(String code);
 

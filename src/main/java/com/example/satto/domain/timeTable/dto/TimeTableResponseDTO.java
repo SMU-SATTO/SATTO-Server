@@ -38,13 +38,19 @@ public record TimeTableResponseDTO(
     }
 
     public static record timeTableListDTO(
+            Long timeTableId,
             String semesterYear,
-            String timeTableName
+            String timeTableName,
+            boolean isPublic,
+            boolean isRepresent
     ){
         public static TimeTableResponseDTO.timeTableListDTO from(TimeTable timeTable){
             return new TimeTableResponseDTO.timeTableListDTO(
+                    timeTable.getTimetableId(),
                     timeTable.getSemesterYear(),
-                    timeTable.getTimetableName()
+                    timeTable.getTimetableName(),
+                    timeTable.getIsPublic(),
+                    timeTable.getIsRepresented()
             );
         }
 
@@ -58,11 +64,12 @@ public record TimeTableResponseDTO(
     }
 
     public static record MajorCombinationResponseDTO(
-            Set<String> combination
+            Set<LectureCombination> combination
     ) {
     }
 
     public static record SelectTimeTableResponseDTO(
+            Long timeTableId,
             List<CurrentLectureResponseDTO> lects,
             String semesterYear,
             String timeTableName,
@@ -72,6 +79,7 @@ public record TimeTableResponseDTO(
     ){
         public static TimeTableResponseDTO.SelectTimeTableResponseDTO from(List<CurrentLectureResponseDTO> lects, TimeTable timeTable){
             return new TimeTableResponseDTO.SelectTimeTableResponseDTO(
+                    timeTable.getTimetableId(),
                     lects,
                     timeTable.getSemesterYear(),
                     timeTable.getTimetableName(),
@@ -81,6 +89,11 @@ public record TimeTableResponseDTO(
         }
 
     }
+
+    public static record LectureCombination(
+            String lectName,
+            String code
+    ){}
 
 
 }
