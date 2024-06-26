@@ -60,20 +60,18 @@ public class FollowController {
     // 팔로우 목록 조회
     @Operation(summary = "팔로우 목록 조회",
             description = "팔로우 목록을 조회한다.")
-    @GetMapping("/followerList")
-    public BaseResponse<Object> viewFollowerList(@AuthenticationPrincipal Users user) {
-        Long userId = user.getUserId();
-        return BaseResponse.onSuccess(usersService.viewFollowerList(userId));
+    @GetMapping("/{studentId}/followerList")
+    public BaseResponse<Object> viewFollowerList(@PathVariable("studentId") String studentId) {
+        return BaseResponse.onSuccess(usersService.viewFollowerList(studentId));
     }
 
 
     // 팔로잉 목록 조회
     @Operation(summary = "팔로잉 목록 조회",
             description = "팔로잉 목록을 조회한다.")
-    @GetMapping("/followingList")
-    public BaseResponse<Object> viewFollowingList(@AuthenticationPrincipal Users user)  {
-        Long userId = user.getUserId();
-        return BaseResponse.onSuccess(usersService.viewFollowingList(userId));
+    @GetMapping("{studentId}/followingList")
+    public BaseResponse<Object> viewFollowingList(@PathVariable("studentId") String studentId)  {
+        return BaseResponse.onSuccess(usersService.viewFollowingList(studentId));
     }
 
 }

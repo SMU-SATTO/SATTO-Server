@@ -72,9 +72,10 @@ public class UsersController {
     @GetMapping("")
     public BaseResponse<?> userInformation(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
+        String userStudentId = user.getStudentId();
         Users users = usersService.userProfile(userId);
-        List follower = (List) usersService.viewFollowerList(userId); // 팔로우 목록
-        List following = (List) usersService.viewFollowingList(userId); // 팔로잉 목록
+        List follower = (List) usersService.followerListNum(userStudentId); // 팔로우 목록
+        List following = (List) usersService.followingListNum(userStudentId); // 팔로잉 목록
 
         return BaseResponse.onSuccess(UsersConverter.toUserProfileDTO(users, follower.size(), following.size()));
     }
