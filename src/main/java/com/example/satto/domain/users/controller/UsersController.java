@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -66,12 +67,16 @@ public class UsersController {
 //    }
 
 
-    // 사용자 정보 조회
-    @Operation(summary = "test용 사용자의 모든 정보 조회")
+    // 유저 프로필 페이지
+    @Operation(summary = "유저 프로필 페이지")
     @GetMapping("")
     public BaseResponse<?> userInformation(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
-        return BaseResponse.onSuccess(usersService.userInformation(userId));
+        Users users = usersService.userProfile(userId);
+        List follower = (List) usersService.viewFollowerList(userId); // 팔로우 목록
+        List following = (List) usersService.viewFollowingList(userId); // 팔로잉 목록
+
+        return BaseResponse.onSuccess(UsersConverter.toUserProfileDTO(users, follower.size(), following.size()));
     }
 
     // 개인정보 수정 클릭하면 수정가능한 정보들이 보임
@@ -82,7 +87,6 @@ public class UsersController {
         Users information = usersService.beforeUpdateInformation(userId);
         return BaseResponse.onSuccess(UsersConverter.toUserShowDTO(information));
     }
-
 
     // 개인정보 수정
     @Operation(summary = "개인정보 수정 요청", description = "개인정보 수정 요청을 보낸다.")

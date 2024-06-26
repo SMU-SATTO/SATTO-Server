@@ -83,7 +83,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public Users userInformation(Long userId) {
+    public Users userProfile(Long userId) {
         return usersRepository.findById(userId).orElseThrow();
     }
 

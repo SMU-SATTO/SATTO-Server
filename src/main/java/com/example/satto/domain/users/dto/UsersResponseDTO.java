@@ -32,5 +32,15 @@ public class UsersResponseDTO {
         private int grade;
     }
 
+    @Getter
+    @Builder
+    public static class UserProfileDTO {
+        private String studentId;
+        private String name;
+        private int followingNum;
+        private int followerNum;
+
+    }
+
 
 }
