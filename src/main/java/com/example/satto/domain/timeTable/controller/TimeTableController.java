@@ -1,6 +1,7 @@
 package com.example.satto.domain.timeTable.controller;
 
 import com.example.satto.domain.timeTable.dto.*;
+import com.example.satto.domain.timeTable.entity.TimeTable;
 import com.example.satto.domain.timeTable.service.TimeTableService;
 import com.example.satto.domain.timeTableLecture.service.TimeTableLectureService;
 import com.example.satto.domain.users.entity.Users;
@@ -38,6 +39,11 @@ public class TimeTableController {
         return BaseResponse.onSuccess("성공");
     }
 
+    @GetMapping
+    public BaseResponse<TimeTableResponseDTO.SelectTimeTableResponseDTO> getRepresentTimeTable(@AuthenticationPrincipal Users users){
+        return BaseResponse.onSuccess(timeTableService.getRepresentTimeTable(users));
+    }
+
     @GetMapping("/list")
     public BaseResponse<List<TimeTableResponseDTO.timeTableListDTO>> getTimeTableList(@AuthenticationPrincipal Users users){
         return BaseResponse.onSuccess(timeTableService.getTimeTableList(users));
@@ -46,5 +52,22 @@ public class TimeTableController {
     @GetMapping("/{timeTableId}")
     public BaseResponse<TimeTableResponseDTO.SelectTimeTableResponseDTO> getTimeTable(@PathVariable(name = "timeTableId") Long timeTableId){
         return BaseResponse.onSuccess(timeTableService.getTimeTable(timeTableId));
+    }
+
+    @PatchMapping("/{timeTableId}/private")
+    public BaseResponse<String> updateTimeTableIsPublic(@PathVariable(name = "timeTableId") Long timeTableId,@RequestBody updateTimeTableRequestDTO isPublic){
+        timeTableService.updateTimeTableIsPublic(timeTableId, isPublic);
+        return BaseResponse.onSuccess("수정되었습니다");
+    }
+    @PatchMapping("/{timeTableId}/represent")
+    public BaseResponse<String> updateTimeTableIsRepresent(@PathVariable(name = "timeTableId") Long timeTableId,@RequestBody updateTimeTableRequestDTO isRepresent, @AuthenticationPrincipal Users users){
+        timeTableService.updateTimeTableIsRepresented(timeTableId, isRepresent, users);
+        return BaseResponse.onSuccess("수정되었습니다");
+    }
+
+    @DeleteMapping("/{timeTableId}")
+    public BaseResponse<String> deleteTimeTable(@PathVariable(name = "timeTableId") Long timeTableId){
+        timeTableService.deleteTimeTable(timeTableId);
+        return BaseResponse.onSuccess("삭제되었습니다");
     }
 }

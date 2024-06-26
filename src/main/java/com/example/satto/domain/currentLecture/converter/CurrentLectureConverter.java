@@ -14,6 +14,7 @@ public class CurrentLectureConverter {
                 .department(currentLecture.getDepartment())
                 .lectName(currentLecture.getLectName())
                 .code(currentLecture.getCode())
+                .codeSection(currentLecture.getCodeSection())
                 .professor(currentLecture.getProfessor())
                 .lectTime(currentLecture.getLectTime())
                 .cmpDiv(currentLecture.getCmpDiv())

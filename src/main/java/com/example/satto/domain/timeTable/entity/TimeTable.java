@@ -3,14 +3,15 @@ package com.example.satto.domain.timeTable.entity;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.global.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
 @Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class TimeTable extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +25,17 @@ public class TimeTable extends BaseEntity {
     @Column(name = "timetable_name")
     private String timetableName;
     @Column(name = "is_public")
-    private Boolean isPublic;
+    private Boolean isPublic = true;
     @Column(name = "is_represented")
-    private Boolean isRepresented;
+    private Boolean isRepresented = false;
     @Column(name = "semester_year")
     private String semesterYear;
+
+    public void updateIsPublic(boolean isPublic){
+        this.isPublic = isPublic;
+    }
+
+    public void updateIdRepresented(boolean isRepresented){
+        this.isRepresented = isRepresented;
+    }
 }
