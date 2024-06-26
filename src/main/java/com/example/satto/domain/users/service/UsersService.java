@@ -13,7 +13,7 @@ public interface UsersService {
 
     Object viewFollowingList(Long userId);
 
-    Users userInformation(Long user);
+    Users userProfile(Long user);
 
     void privateAccount(Long userId);
 

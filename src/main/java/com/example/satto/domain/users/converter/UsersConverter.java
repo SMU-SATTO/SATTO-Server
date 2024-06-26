@@ -2,7 +2,6 @@ package com.example.satto.domain.users.converter;
 
 import com.example.satto.domain.users.dto.UsersResponseDTO;
 import com.example.satto.domain.users.entity.Users;
-import org.springframework.security.core.userdetails.User;
 
 public class UsersConverter {
 
@@ -26,5 +25,14 @@ public class UsersConverter {
                 .grade(user.getGrade())
                 .build();
 
+    }
+
+    public static UsersResponseDTO.UserProfileDTO toUserProfileDTO(Users user, int followerNum, int followingNum) {
+        return UsersResponseDTO.UserProfileDTO.builder()
+                .name(user.getName())
+                .studentId(user.getStudentId())
+                .followingNum(followingNum)
+                .followerNum(followerNum)
+                .build();
     }
 }
