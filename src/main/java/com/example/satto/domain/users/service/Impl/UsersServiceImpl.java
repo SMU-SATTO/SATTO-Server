@@ -18,9 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -44,9 +42,47 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public Object viewFollowerList(Long userId) {
+    public Object viewFollowerList(String studentId) {
+        Map<String, String> followerMap = new HashMap<>();
+        Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(studentId));
+        if (optionalUser.isPresent()) {
+            Users user = optionalUser.get();
+
+            for (Follow followerId : user.getFollowingList()) {
+                if ((followerId.getRequest() == 2) && (!followerId.getFollowingId().equals(user.getStudentId()))) {
+                    followerMap.put(followerId.getFollowerId().getStudentId(), followerId.getFollowerId().getName());
+//                    followerList.add(followerId.getFollowerId().getEmail());
+                }
+            }
+            return followerMap;
+        } else {
+            return new UsersHandler(ErrorStatus._NOT_FOUND_USER);
+        }
+    }
+
+    @Override
+    public Object viewFollowingList(String studentId) {
+        Map<String, String> followingMap = new HashMap<>();
+        Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(studentId));
+        if (optionalUser.isPresent()) {
+            Users user = optionalUser.get();
+
+            for (Follow followingId : user.getFollowerList()) {
+                if ((followingId.getRequest() == 2) && (!followingId.getFollowerId().equals(user.getStudentId()))) {
+                    followingMap.put(followingId.getFollowingId().getStudentId(), followingId.getFollowingId().getName());
+//                    followingList.add(followingId.getFollowingId().getStudentId());
+                }
+            }
+            return followingMap;
+        } else {
+            return new UsersHandler(ErrorStatus._NOT_FOUND_USER);
+        }
+    }
+
+    @Override
+    public Object followerListNum(String studentId) {
         List<String> followerList = new ArrayList<>();
-        Optional<Users> optionalUser = usersRepository.findById(userId);
+        Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(studentId));
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
 
@@ -60,26 +96,25 @@ public class UsersServiceImpl implements UsersService {
             return new UsersHandler(ErrorStatus._NOT_FOUND_USER);
         }
 
-
     }
 
-
     @Override
-    public Object viewFollowingList(Long userId) {
+    public Object followingListNum(String studentId) {
         List<String> followingList = new ArrayList<>();
-        Optional<Users> optionalUser = usersRepository.findById(userId);
+        Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(studentId));
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
 
             for (Follow followingId : user.getFollowerList()) {
                 if ((followingId.getRequest() == 2) && (!followingId.getFollowerId().equals(user.getStudentId()))) {
-                    followingList.add(followingId.getFollowingId().getEmail());
+                    followingList.add(followingId.getFollowingId().getStudentId());
                 }
             }
             return followingList;
         } else {
             return new UsersHandler(ErrorStatus._NOT_FOUND_USER);
         }
+
     }
 
     @Override

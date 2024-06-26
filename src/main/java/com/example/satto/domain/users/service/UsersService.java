@@ -9,9 +9,14 @@ public interface UsersService {
 
     UserDetailsService userDetailsService();
 
-    Object viewFollowerList(Long userId);
+    Object viewFollowerList(String studentId);
 
-    Object viewFollowingList(Long userId);
+    Object viewFollowingList(String studentId);
+
+    Object followerListNum(String studentId);
+
+    Object followingListNum(String studentId);
+
 
     Users userProfile(Long user);
 
