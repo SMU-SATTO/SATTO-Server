@@ -31,4 +31,9 @@ public class Follow {
     @CreationTimestamp
     @Column(name = "follow_date")
     private LocalDate followDate;
+
+    @Override
+    public String toString() {
+        return followerId != null ? followerId.getStudentId() : "null";
+    }
 }

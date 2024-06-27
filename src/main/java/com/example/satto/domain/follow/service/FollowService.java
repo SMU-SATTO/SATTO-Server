@@ -2,6 +2,8 @@ package com.example.satto.domain.follow.service;
 
 import com.example.satto.global.common.BaseResponse;
 
+import java.util.Map;
+
 public interface FollowService {
 
 
@@ -13,4 +15,6 @@ public interface FollowService {
     BaseResponse<Object> unFollower(String followerId, String studentId);
 
     BaseResponse<Object> unFollowing(String followingId, String studentId);
+
+    Map<String, String> followRequestList(String studentId);
 }

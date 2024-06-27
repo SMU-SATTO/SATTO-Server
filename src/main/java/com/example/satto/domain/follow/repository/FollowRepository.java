@@ -5,6 +5,8 @@ import com.example.satto.domain.users.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     boolean existsByFollowerIdStudentIdAndFollowingIdStudentId(String studentId, String followingId);
@@ -20,4 +22,5 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Transactional
     void deleteByFollowerId(Users followerId);
+    List<Follow> findByFollowingIdStudentIdAndRequest(String studentId, int i);
 }
