@@ -6,9 +6,14 @@ import com.example.satto.domain.follow.service.FollowService;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.repository.UsersRepository;
 import com.example.satto.global.common.BaseResponse;
+import com.example.satto.global.common.code.status.ErrorStatus;
+import com.example.satto.global.common.exception.handler.UsersHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +50,32 @@ public class FollowServiceImpl implements FollowService {
 
         }
         return BaseResponse.onSuccess("Follow 요청을 보냈습니다.");
+    }
+
+    @Override
+    public Map<String, String> followRequestList(String studentId) {
+        // 1. 팔로우 요청을 보낸 사람들의 목록을 가져온다
+        List<Follow> followerRequests = followRepository.findByFollowingIdStudentIdAndRequest(studentId, 1);
+//        System.out.println("팔로우 요청 목록 크기: " + followerRequests.size());
+
+        Map<String, String> followRequesters = new HashMap<>();
+        List<String> candidateStudentId = new ArrayList<>();
+
+        for (Follow candidate1 : followerRequests) {
+            candidateStudentId.add(candidate1.toString());
+        }
+
+        for (String student : candidateStudentId) {
+            Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(student));
+            if(optionalUser.isPresent()) {
+                Users user = optionalUser.get();
+                followRequesters.put(student, user.getName());
+
+            } else {
+                throw new UsersHandler(ErrorStatus._NOT_FOUND_USER);
+            }
+        }
+        return followRequesters;
     }
 
     @Transactional
@@ -91,6 +122,5 @@ public class FollowServiceImpl implements FollowService {
             return BaseResponse.onFailure("해당 Following이 존재하지 않습니다.");
         }
     }
-
 
 }

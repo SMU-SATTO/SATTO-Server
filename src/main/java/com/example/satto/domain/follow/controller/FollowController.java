@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/follow")
 @RequiredArgsConstructor
@@ -25,6 +27,14 @@ public class FollowController {
     public BaseResponse<Object> followRequest(@PathVariable("followingId") String followingId, @AuthenticationPrincipal Users user) {
         String studentId = user.getStudentId();
         return followService.followRequest(followingId, studentId);
+    }
+
+    // 팔로우 요청 수락 대기 목록
+    @Operation(summary = "팔로우 요청 수락 대기 목록")
+    @GetMapping("/request/list")
+    public Map<String, String> followRequestList(@AuthenticationPrincipal Users user) {
+        String studentId = user.getStudentId();
+        return followService.followRequestList(studentId);
     }
 
     // 팔로우 수락
