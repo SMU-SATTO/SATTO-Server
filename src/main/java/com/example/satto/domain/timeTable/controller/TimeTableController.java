@@ -21,19 +21,19 @@ public class TimeTableController {
     private final TimeTableLectureService timeTableLectureService;
 
     @PostMapping
-    public BaseResponse<List<TimeTableResponseDTO.MajorCombinationResponseDTO>> createMajorTimeTable(MajorTimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
+    public BaseResponse<List<TimeTableResponseDTO.MajorCombinationResponseDTO>> createMajorTimeTable(@RequestBody MajorTimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
         List<TimeTableResponseDTO.MajorCombinationResponseDTO> result = timeTableService.createMajorTimeTable(createDTO, users);
         return BaseResponse.onSuccess(result);
     }
 
     @PostMapping("/auto")
-    public BaseResponse<List<TimeTableResponseDTO.EntireTimeTableResponseDTO>> createTimeTable(EntireTimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
+    public BaseResponse<List<TimeTableResponseDTO.EntireTimeTableResponseDTO>> createTimeTable(@RequestBody EntireTimeTableRequestDTO createDTO, @AuthenticationPrincipal Users users){
         List<TimeTableResponseDTO.EntireTimeTableResponseDTO> result = timeTableService.createTimeTable(createDTO);
         return BaseResponse.onSuccess(result);
     }
 
     @PostMapping("/select")
-    public BaseResponse<String> selectTimeTable(TimeTableSelectRequestDTO selectDTO, @AuthenticationPrincipal Users users){
+    public BaseResponse<String> selectTimeTable(@RequestBody TimeTableSelectRequestDTO selectDTO, @AuthenticationPrincipal Users users){
         Long timeTableId = timeTableService.createTimeTable(selectDTO,users);
         timeTableLectureService.addLect(selectDTO.codeSectionList(),timeTableId);
         return BaseResponse.onSuccess("성공");
