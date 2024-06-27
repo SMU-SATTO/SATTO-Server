@@ -105,6 +105,15 @@ public class TimeTableService {
         generateCombinations(majorLectDetailList, 0, lectDetailList, timeTable, createDTO.majorCount() + requiredLectDetailList.size());
         result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
 
+        List<Integer> toRemoveIndexes = new ArrayList<>();
+
+        for( int i = 0; i < result.size(); i++){
+            if(result.get(i).timeTable().size() == 0) {toRemoveIndexes.add(i);}
+        }
+        Collections.reverse(toRemoveIndexes);
+        for (int index : toRemoveIndexes) {
+            result.remove(index);
+        }
 
         return calculateMajorCombinations(result);
     }
