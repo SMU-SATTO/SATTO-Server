@@ -39,8 +39,18 @@ public class UsersResponseDTO {
         private String name;
         private int followingNum;
         private int followerNum;
-
     }
+    @Getter
+    @Builder
+    public static class UserInformation2 {
+        private String studentId;
+        private String name;
+        private String nickname;
+        private String department;
+        private int grade;
+        private boolean isPublic;
+    }
+
 
 
 }

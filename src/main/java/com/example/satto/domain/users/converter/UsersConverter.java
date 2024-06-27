@@ -35,4 +35,16 @@ public class UsersConverter {
                 .followerNum(followerNum)
                 .build();
     }
+
+    public static UsersResponseDTO.UserInformation2 toUserInformation2(Users user) {
+        return UsersResponseDTO.UserInformation2.builder()
+                .studentId(user.getStudentId())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .department(user.getDepartment())
+                .grade(user.getGrade())
+                .isPublic(user.isPublic())
+                .build();
+    }
+
 }
