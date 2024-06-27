@@ -68,7 +68,7 @@ public class UsersController {
 
 
     // 유저 프로필 페이지
-    @Operation(summary = "유저 프로필 페이지")
+    @Operation(summary = "유저 프로필 페이지", description = "유저의 이름, 학번, 팔로워 수, 팔로잉 수")
     @GetMapping("")
     public BaseResponse<?> userInformation(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -79,6 +79,19 @@ public class UsersController {
 
         return BaseResponse.onSuccess(UsersConverter.toUserProfileDTO(users, follower.size(), following.size()));
     }
+
+    // 유저 정보 반환
+    @Operation(summary = "유저 정보 반환", description = "유저의 이름, 닉네임, 학과, 학년, 공개/비공개")
+    @GetMapping("/inform")
+    public BaseResponse<?> userInformation2(@AuthenticationPrincipal Users user) {
+        Long userId = user.getUserId();
+        String userStudentId = user.getStudentId();
+        Users users = usersService.userProfile(userId);
+
+        return BaseResponse.onSuccess(UsersConverter.toUserInformation2(users));
+    }
+
+
 
     // 개인정보 수정 클릭하면 수정가능한 정보들이 보임
     @Operation(summary = "수정 가능한 개인정보 조회", description = "개인정보 수정으로 진입하면 수정가능한 정보들을 우선 보여준다.")

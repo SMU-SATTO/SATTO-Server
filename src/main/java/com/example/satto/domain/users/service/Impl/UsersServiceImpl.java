@@ -119,7 +119,7 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public Users userProfile(Long userId) {
-        return usersRepository.findById(userId).orElseThrow();
+        return usersRepository.findById(userId).orElseThrow(() -> new UsersHandler(ErrorStatus._NOT_FOUND_USER));
     }
 
     @Override
