@@ -8,15 +8,15 @@ import lombok.Builder;
 public record CurrentLectureRequestDto(
         List<String> codeSection,
         List<Integer> grade,
-        int elective,
-        int normal,
-        int essential,
-        byte humanity,
-        byte society,
-        byte nature,
-        byte engineering,
-        byte art,
-        byte isCyber,
+        Byte elective,
+        Byte normal,
+        Byte essential,
+        Byte humanity,
+        Byte society,
+        Byte nature,
+        Byte engineering,
+        Byte art,
+        Byte isCyber,
         String timeZone
 ) {}
 

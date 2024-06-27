@@ -71,6 +71,24 @@ jar {
 	enabled = false
 }
 
+// QueryDsl 설정
+def generated = 'src/main/generated'
+
+// QueryDsl QClass 파일 생성 위치 지정
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(generated)
+}
+
+// java source set에 QueryDsl 위치 추가
+sourceSets {
+	main.java.srcDirs += "$projectDir/build/generated"
+}
+
+// gradle clean시 QClass 디렉토리 삭제
+clean {
+	delete file(generated)
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

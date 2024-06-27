@@ -18,9 +18,9 @@ public class CurrentLecture {
     private String lectTime;
     private String lectRoom;
     private String cmpDiv;
-    private int credit;
+    private Integer credit;
     private String isCyber;
-    private int grade;
+    private Integer grade;
     private String semesterYear;
     private String department;
     private String professor;

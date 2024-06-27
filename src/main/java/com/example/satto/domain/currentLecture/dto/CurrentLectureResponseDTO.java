@@ -5,9 +5,7 @@ import lombok.Builder;
 @Builder
 public record CurrentLectureResponseDTO(
         String department,
-        String major,
         String code,
-        String codeSection,
         String lectName,
         String professor,
         String lectTime,

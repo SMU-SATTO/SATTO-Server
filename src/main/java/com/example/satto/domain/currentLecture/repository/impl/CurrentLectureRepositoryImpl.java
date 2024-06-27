@@ -1,8 +1,8 @@
 package com.example.satto.domain.currentLecture.repository.impl;
 
 import com.example.satto.domain.currentLecture.dto.CurrentLectureResponseDTO;
-import com.example.satto.domain.currentLecture.repository.CurrentLectureRepositoryCustom;
 import com.example.satto.domain.currentLecture.entity.QCurrentLecture;
+import com.example.satto.domain.currentLecture.repository.CurrentLectureRepositoryCustom;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,46 +21,50 @@ public class CurrentLectureRepositoryImpl implements CurrentLectureRepositoryCus
     public List<CurrentLectureResponseDTO> findLectures(
             List<String> codeSection, List<Integer> grade, int elective,
             int normal, int essential, byte humanity, byte society,
-            byte nature, byte engineering, byte art, byte isCyber, String timeZone) {
+            byte nature, byte engineering, byte art, byte isCyber, List<String> timeZone) {
 
         QCurrentLecture lecture = QCurrentLecture.currentLecture;
         BooleanBuilder builder = new BooleanBuilder();
 
         if (codeSection != null && !codeSection.isEmpty()) {
-            builder.and(lecture.codeSection.in(codeSection));
+            builder.or(lecture.codeSection.in(codeSection));
         }
         if (grade != null && !grade.isEmpty()) {
-            builder.and(lecture.grade.in(grade));
+            builder.or(lecture.grade.in(grade));
         }
         if (elective > 0) {
-            builder.and(lecture.cmpDiv.eq("선택"));
+            builder.or(lecture.cmpDiv.eq("교선"));
         }
         if (normal > 0) {
-            builder.and(lecture.cmpDiv.eq("일반"));
+            builder.or(lecture.cmpDiv.eq("일선"));
         }
         if (essential > 0) {
-            builder.and(lecture.cmpDiv.eq("필수"));
+            builder.or(lecture.cmpDiv.eq("교필"));
         }
         if (humanity > 0) {
-            builder.and(lecture.subjectType.eq("인문"));
+            builder.or(lecture.subjectType.eq("인문"));
         }
         if (society > 0) {
-            builder.and(lecture.subjectType.eq("사회"));
+            builder.or(lecture.subjectType.eq("사회"));
         }
         if (nature > 0) {
-            builder.and(lecture.subjectType.eq("자연"));
+            builder.or(lecture.subjectType.eq("자연"));
         }
         if (engineering > 0) {
-            builder.and(lecture.subjectType.eq("공학"));
+            builder.or(lecture.subjectType.eq("공학"));
         }
         if (art > 0) {
-            builder.and(lecture.subjectType.eq("예술"));
+            builder.or(lecture.subjectType.eq("예술"));
         }
         if (isCyber > 0) {
-            builder.and(lecture.isCyber.eq("Y"));
+            builder.or(lecture.isCyber.eq("Y"));
         }
-        if (timeZone != null) {
-            builder.and(lecture.lectTime.contains(timeZone));
+        if (timeZone != null && !timeZone.isEmpty()) {
+            BooleanBuilder timeZoneBuilder = new BooleanBuilder();
+            for (String time : timeZone) {
+                timeZoneBuilder.or(lecture.lectTime.contains(time));
+            }
+            builder.or(timeZoneBuilder);
         }
 
         return queryFactory

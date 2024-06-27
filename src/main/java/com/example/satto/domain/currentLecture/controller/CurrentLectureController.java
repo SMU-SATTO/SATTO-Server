@@ -20,7 +20,6 @@ public class CurrentLectureController {
 
     private final CurrentLectureService currentLectureService;
 
-    //TODO: QueryDSL을 이용한 강의 필터링 기능 추가 구현 필요
     @Operation(method = "GET", summary = "현재 강의 목록 조회",
             description = "시간표 자동 생성 과정에서 현재 강의 정보를 검색할때 사용됩니다. 요청한 현재 강의 정보 목록을 반환합니다.")
     @GetMapping("/search")

@@ -1,5 +1,6 @@
 package com.example.satto.domain.currentLecture.repository;
 
+import com.example.satto.domain.currentLecture.dto.CurrentLectureResponseDTO;
 import com.example.satto.domain.currentLecture.entity.CurrentLecture;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +11,7 @@ import java.util.List;
 
 
 @Repository
-public interface CurrentLectureRepository extends JpaRepository<CurrentLecture, String> {
+public interface CurrentLectureRepository extends JpaRepository<CurrentLecture, String>, CurrentLectureRepositoryCustom {
 
     List<CurrentLecture> findCurrentLectureByDepartmentAndGrade(String department, int grade);
 
@@ -24,5 +25,4 @@ public interface CurrentLectureRepository extends JpaRepository<CurrentLecture, 
             "and l.cmpDiv = :cmpdiv   ")
     List<CurrentLecture> findLectByCmpDiv(@Param("cmpdiv") String cmpDiv);
     CurrentLecture findCurrentLectureByCodeSection(String codeSection);
-
 }
