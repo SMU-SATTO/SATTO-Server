@@ -91,16 +91,21 @@ public class TimeTableService {
         List<TimeTableResponseDTO.EntireTimeTableResponseDTO> result;
 
         List<CurrentLecture> requiredLectList = new ArrayList<>();
-        for( String lectCodeSection : createDTO.requiredLect() ){
-            requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lectCodeSection));
-        }
+        List<TimeTableResponseDTO.TimeTableLectureDTO> requiredLectDetailList = new ArrayList<>();
 
-        List<TimeTableResponseDTO.TimeTableLectureDTO> requiredLectDetailList = TimeTableResponseDTO.TimeTableLectureDTO.fromList(requiredLectList);
+        if(!createDTO.requiredLect().get(0).isEmpty()) {
+
+            for (String lectCodeSection : createDTO.requiredLect()) {
+                requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lectCodeSection));
+            }
+
+            requiredLectDetailList = TimeTableResponseDTO.TimeTableLectureDTO.fromList(requiredLectList);
+            generateCombinations(requiredLectDetailList, 0, lectDetailList, timeTable, requiredLectDetailList.size());
+        }
 
         majorLectDetailList = removeLecturesInImpossibleTimeZones(majorLectDetailList, createDTO.impossibleTimeZone());
 
         //필수로 들어야할 강의 우선 조합
-        generateCombinations(requiredLectDetailList, 0, lectDetailList, timeTable, requiredLectDetailList.size());
 
         generateCombinations(majorLectDetailList, 0, lectDetailList, timeTable, createDTO.majorCount() + requiredLectDetailList.size());
         result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
