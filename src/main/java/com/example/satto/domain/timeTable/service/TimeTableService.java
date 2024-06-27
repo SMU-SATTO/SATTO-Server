@@ -1,7 +1,6 @@
 package com.example.satto.domain.timeTable.service;
 
 import com.example.satto.domain.currentLecture.converter.CurrentLectureConverter;
-import com.example.satto.domain.currentLecture.dto.CurrentLectureListResponseDTO;
 import com.example.satto.domain.currentLecture.dto.CurrentLectureResponseDTO;
 import com.example.satto.domain.currentLecture.entity.CurrentLecture;
 import com.example.satto.domain.currentLecture.repository.CurrentLectureRepository;
