@@ -9,7 +9,6 @@ import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.repository.UsersRepository;
 import com.example.satto.domain.users.service.UsersService;
 import com.example.satto.global.common.code.status.ErrorStatus;
-import com.example.satto.global.common.exception.handler.FollowHandler;
 import com.example.satto.global.common.exception.handler.UsersHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,7 +43,7 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Object viewFollowerList(String studentId) {
         Map<String, String> followerMap = new HashMap<>();
-        Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(studentId));
+        Optional<Users> optionalUser = usersRepository.findByStudentId(studentId);
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
 
@@ -63,7 +62,7 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Object viewFollowingList(String studentId) {
         Map<String, String> followingMap = new HashMap<>();
-        Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(studentId));
+        Optional<Users> optionalUser = usersRepository.findByStudentId(studentId);
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
 
@@ -82,7 +81,7 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Object followerListNum(String studentId) {
         List<String> followerList = new ArrayList<>();
-        Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(studentId));
+        Optional<Users> optionalUser = usersRepository.findByStudentId(studentId);
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
 
@@ -101,7 +100,7 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Object followingListNum(String studentId) {
         List<String> followingList = new ArrayList<>();
-        Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(studentId));
+        Optional<Users> optionalUser = usersRepository.findByStudentId(studentId);
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
 
@@ -200,6 +199,12 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public boolean studentIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest) {
         return usersRepository.existsByStudentId(emailCheckRequest.getStudentId());
+    }
+
+    // 상대방 프로필 페이지 방문시 사용하는 함수
+    @Override
+    public Users userProfile(String studentId) {
+        return usersRepository.findByStudentId(studentId).orElseThrow(() -> new UsersHandler(ErrorStatus._NOT_FOUND_USER));
     }
 
 }

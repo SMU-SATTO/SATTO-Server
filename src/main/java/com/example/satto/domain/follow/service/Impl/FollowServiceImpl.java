@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,22 +28,27 @@ public class FollowServiceImpl implements FollowService {
             return BaseResponse.onSuccess("이미 Follow 요청을 보냈습니다.");
         } else {
             // Follower 사용자 조회
-            Users followerUser = usersRepository.findByStudentId(studentId);
-            if (followerUser == null) {
+            Optional<Users> followerUser = usersRepository.findByStudentId(studentId);
+            if (followerUser.isEmpty()) {
                 return BaseResponse.onFailure("Follower 사용자를 찾을 수 없습니다.");
             }
 
             // Following 사용자 조회
-            Users followingUser = usersRepository.findByStudentId(followingId);
-            if (followingUser == null) {
+            Optional<Users> followingUser = usersRepository.findByStudentId(followingId);
+            if (followingUser.isEmpty()) {
                 return BaseResponse.onFailure("Following 사용자를 찾을 수 없습니다.");
             }
+
+            // Optional에서 실제 Users 객체를 꺼냄
+            Users Op_followerUser = followerUser.get();
+            Users Op_followingUser = followingUser.get();
+
 
             // Follow 엔티티 생성 및 저장
             Follow follow = new Follow();
 
-            follow.setFollowerId(followerUser);
-            follow.setFollowingId(followingUser);
+            follow.setFollowerId(Op_followerUser);
+            follow.setFollowingId(Op_followingUser);
             follow.setRequest(1);
             followRepository.save(follow);
 
@@ -66,7 +70,7 @@ public class FollowServiceImpl implements FollowService {
         }
 
         for (String student : candidateStudentId) {
-            Optional<Users> optionalUser = Optional.ofNullable(usersRepository.findByStudentId(student));
+            Optional<Users> optionalUser = usersRepository.findByStudentId(student);
             if(optionalUser.isPresent()) {
                 Users user = optionalUser.get();
                 followRequesters.put(student, user.getName());
@@ -113,7 +117,6 @@ public class FollowServiceImpl implements FollowService {
     public BaseResponse<Object> unFollowing(String followingId, String studentId) {
         Follow follow = followRepository.findByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId);
         boolean followingExist = followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId);
-        System.out.println("어떤가요"+followingExist);
 
         if (followingExist) {
             followRepository.delete(follow);

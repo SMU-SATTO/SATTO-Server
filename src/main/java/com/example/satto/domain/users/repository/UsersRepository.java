@@ -2,7 +2,6 @@ package com.example.satto.domain.users.repository;
 
 import com.example.satto.domain.event.entity.PhotoContest;
 import com.example.satto.domain.users.entity.Users;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +21,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     boolean existsByStudentId(String studentId);
 
-    Users findByStudentId(String studentId);
+    Optional<Users> findByStudentId(String studentId);
 
     Users findByStudentId(Users studentId);
 }

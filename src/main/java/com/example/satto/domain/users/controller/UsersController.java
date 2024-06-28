@@ -92,7 +92,6 @@ public class UsersController {
     }
 
 
-
     // 개인정보 수정 클릭하면 수정가능한 정보들이 보임
     @Operation(summary = "수정 가능한 개인정보 조회", description = "개인정보 수정으로 진입하면 수정가능한 정보들을 우선 보여준다.")
     @GetMapping("account/present")
