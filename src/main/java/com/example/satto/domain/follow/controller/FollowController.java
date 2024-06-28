@@ -1,6 +1,7 @@
 package com.example.satto.domain.follow.controller;
 
 import com.example.satto.domain.follow.service.FollowService;
+import com.example.satto.domain.users.converter.UsersConverter;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.service.UsersService;
 import com.example.satto.global.common.BaseResponse;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -66,6 +68,19 @@ public class FollowController {
 
     }
 
+    // 상대방 프로필 페이지 방문
+    @Operation(summary = "상대방 프로필 페이지", description = "PathVariable 에 상대방 학번 입력한다. / 상대방 유저의 이름, 학번, 팔로워 수, 팔로잉 수 를 볼수 있다.")
+    @GetMapping("/view/{studentId}")
+    public BaseResponse<?> userInformation(@PathVariable("studentId") String studentId) {
+//        Long userId = user.getUserId();
+//        String userStudentId = user.getStudentId();
+        Users users = usersService.userProfile(studentId);
+        List follower = (List) usersService.followerListNum(studentId); // 팔로우 목록
+        List following = (List) usersService.followingListNum(studentId); // 팔로잉 목록
+
+        return BaseResponse.onSuccess(UsersConverter.toUserProfileDTO(users, follower.size(), following.size()));
+    }
+
 
     // 팔로우 목록 조회
     @Operation(summary = "팔로우 목록 조회",
@@ -74,7 +89,6 @@ public class FollowController {
     public BaseResponse<Object> viewFollowerList(@PathVariable("studentId") String studentId) {
         return BaseResponse.onSuccess(usersService.viewFollowerList(studentId));
     }
-
 
     // 팔로잉 목록 조회
     @Operation(summary = "팔로잉 목록 조회",
