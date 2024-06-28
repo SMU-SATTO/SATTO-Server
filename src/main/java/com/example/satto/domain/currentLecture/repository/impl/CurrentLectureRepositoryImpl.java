@@ -5,6 +5,7 @@ import com.example.satto.domain.currentLecture.entity.QCurrentLecture;
 import com.example.satto.domain.currentLecture.repository.CurrentLectureRepositoryCustom;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -27,44 +28,44 @@ public class CurrentLectureRepositoryImpl implements CurrentLectureRepositoryCus
         BooleanBuilder builder = new BooleanBuilder();
 
         if (codeSection != null && !codeSection.isEmpty()) {
-            builder.or(lecture.codeSection.in(codeSection));
+            builder.and(lecture.codeSection.in(codeSection));
         }
         if (grade != null && !grade.isEmpty()) {
-            builder.or(lecture.grade.in(grade));
+            builder.and(lecture.grade.in(grade));
         }
         if (elective > 0) {
-            builder.or(lecture.cmpDiv.eq("교선"));
+            builder.and(lecture.cmpDiv.eq("교선"));
         }
         if (normal > 0) {
-            builder.or(lecture.cmpDiv.eq("일선"));
+            builder.and(lecture.cmpDiv.eq("일선"));
         }
         if (essential > 0) {
-            builder.or(lecture.cmpDiv.eq("교필"));
+            builder.and(lecture.cmpDiv.eq("교필"));
         }
         if (humanity > 0) {
-            builder.or(lecture.subjectType.eq("인문"));
+            builder.and(lecture.subjectType.eq("인문"));
         }
         if (society > 0) {
-            builder.or(lecture.subjectType.eq("사회"));
+            builder.and(lecture.subjectType.eq("사회"));
         }
         if (nature > 0) {
-            builder.or(lecture.subjectType.eq("자연"));
+            builder.and(lecture.subjectType.eq("자연"));
         }
         if (engineering > 0) {
-            builder.or(lecture.subjectType.eq("공학"));
+            builder.and(lecture.subjectType.eq("공학"));
         }
         if (art > 0) {
-            builder.or(lecture.subjectType.eq("예술"));
+            builder.and(lecture.subjectType.eq("예술"));
         }
         if (isCyber > 0) {
-            builder.or(lecture.isCyber.eq("Y"));
+            builder.and(lecture.isCyber.eq("Y"));
         }
         if (timeZone != null && !timeZone.isEmpty()) {
-            BooleanBuilder timeZoneBuilder = new BooleanBuilder();
             for (String time : timeZone) {
-                timeZoneBuilder.or(lecture.lectTime.contains(time));
+                String likePattern = "%" + time + "%";
+                BooleanExpression lectTimeTemplate = lecture.lectTime.like(likePattern);
+                builder.and(lectTimeTemplate);
             }
-            builder.or(timeZoneBuilder);
         }
 
         return queryFactory
@@ -76,6 +77,7 @@ public class CurrentLectureRepositoryImpl implements CurrentLectureRepositoryCus
                         lecture.lectTime,
                         lecture.cmpDiv,
                         lecture.subjectType,
+                        lecture.isCyber,
                         lecture.credit))
                 .from(lecture)
                 .where(builder)

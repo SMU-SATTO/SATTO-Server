@@ -11,5 +11,6 @@ public record CurrentLectureResponseDTO(
         String lectTime,
         String cmpDiv,
         String subjectType,
+        String isCyber,
         Integer credit
 ) {}
