@@ -48,8 +48,6 @@ public class UsersController {
         }
     }
 
-
-
 //     프로필 이미지 등록
 //    @PostMapping("/id/{email}/profile/image")
 //    public BaseResponse<?> uploadProfileImg(@RequestParam("file") MultipartFile file, @PathVariable("email") String email) throws IOException {
@@ -65,7 +63,6 @@ public class UsersController {
 //        fileService.deleteFile(profileImg);
 //        return BaseResponse.onSuccess("삭제 완료");
 //    }
-
 
     // 유저 프로필 페이지
     @Operation(summary = "유저 프로필 페이지", description = "유저의 이름, 학번, 팔로워 수, 팔로잉 수")
@@ -90,7 +87,6 @@ public class UsersController {
 
         return BaseResponse.onSuccess(UsersConverter.toUserInformation2(users));
     }
-
 
     // 개인정보 수정 클릭하면 수정가능한 정보들이 보임
     @Operation(summary = "수정 가능한 개인정보 조회", description = "개인정보 수정으로 진입하면 수정가능한 정보들을 우선 보여준다.")
@@ -126,6 +122,14 @@ public class UsersController {
         Long userId = user.getUserId();
         usersService.publicAccount(userId);
         return BaseResponse.onSuccess("공개 설정 완료");
+    }
+
+    @Operation(summary = "비밀번호 재설정")
+    @PatchMapping("account/pw")
+    public BaseResponse<?> resetPassword(@RequestBody UsersRequestDTO.UpdateUserPasswordDTO updateUserPasswordDTO, @AuthenticationPrincipal Users user) {
+        Long userId = user.getUserId();
+        usersService.resetPassword(updateUserPasswordDTO, userId);
+        return BaseResponse.onSuccess("비밀번호 재설정 완료");
     }
 
     @Operation(summary = "회원 탈퇴")

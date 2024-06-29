@@ -14,4 +14,9 @@ public class UsersRequestDTO {
         private int grade;
     }
 
+    @Getter
+    public static class UpdateUserPasswordDTO {
+        private String password;
+    }
+
 }
