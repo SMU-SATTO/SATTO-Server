@@ -1,12 +1,18 @@
 package com.example.satto.domain.timeTable.entity;
 
 import com.example.satto.domain.users.entity.Users;
+import com.example.satto.global.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
-public class TimeTable {
+@Builder
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class TimeTable extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "timetable_id")
@@ -16,13 +22,20 @@ public class TimeTable {
     @JoinColumn(name = "user_id")
     private Users users;
 
+    @Column(name = "timetable_name")
+    private String timetableName;
     @Column(name = "is_public")
-    private Boolean isPublic;
+    private Boolean isPublic = true;
     @Column(name = "is_represented")
-    private Boolean isRepresented;
-    @Column(name = "created_at")
-    private Date createdAt;
+    private Boolean isRepresented = false;
     @Column(name = "semester_year")
     private String semesterYear;
 
+    public void updateIsPublic(boolean isPublic){
+        this.isPublic = isPublic;
+    }
+
+    public void updateIdRepresented(boolean isRepresented){
+        this.isRepresented = isRepresented;
+    }
 }

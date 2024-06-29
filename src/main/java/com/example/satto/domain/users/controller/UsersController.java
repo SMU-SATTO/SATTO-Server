@@ -8,12 +8,14 @@ import com.example.satto.domain.users.dto.UsersResponseDTO;
 import com.example.satto.domain.users.entity.Users;
 import com.example.satto.domain.users.service.UsersService;
 import com.example.satto.global.common.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -25,6 +27,7 @@ public class UsersController {
     private final FileService fileService;
 
     // email 중복 확인
+    @Operation(summary = "email 중복 확인")
     @GetMapping("/id/{email}")
     public BaseResponse<?> emailDuplicate(@PathVariable("email") String email) {
         if (usersService.emailDuplicate(email)) {
@@ -35,6 +38,7 @@ public class UsersController {
     }
 
     // nickname 중복 확인
+    @Operation(summary = "nickname 중복 확인")
     @GetMapping("/id/nickname/{nickname}")
     public BaseResponse<?> nicknameDuplicate(@PathVariable("nickname") String nickname) {
         if (usersService.nicknameDuplicate(nickname)) {
@@ -45,27 +49,8 @@ public class UsersController {
     }
 
 
-    // 비밀번호 조건 확인
-    @PostMapping("/id/password")
-    public BaseResponse<?> passwordCheck(@RequestBody UsersRequestDTO.passwordDTO passwordDTO) {
-        // 제약 검증
-        if (!passwordDTO.getFirstPassword().matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}")) {
-            // 제약 조건을 만족 하지 않은 경우
-            return BaseResponse.onFailure("8~16 자리의 영어(대/소문), 숫자, 특수문자를 포함해 주세요.");
-        }
 
-        if (usersService.passwordCheck(passwordDTO.getFirstPassword(), passwordDTO.getSecondPassword())) {
-            return BaseResponse.onSuccess("비밀번호가 일치합니다.");
-        }
-        else {
-            System.out.println(passwordDTO.getFirstPassword());
-            System.out.println(passwordDTO.getSecondPassword());
-            return BaseResponse.onFailure("비밀번호가 일치하지 않습니다.");
-        }
-
-    }
-
-//    // 프로필 이미지 등록
+//     프로필 이미지 등록
 //    @PostMapping("/id/{email}/profile/image")
 //    public BaseResponse<?> uploadProfileImg(@RequestParam("file") MultipartFile file, @PathVariable("email") String email) throws IOException {
 //        String url = fileService.uploadFile(file, FileFolder.profile_Image);
@@ -82,14 +67,42 @@ public class UsersController {
 //    }
 
 
-    // 사용자 정보 조회
+    // 유저 프로필 페이지
+    @Operation(summary = "유저 프로필 페이지", description = "유저의 이름, 학번, 팔로워 수, 팔로잉 수")
     @GetMapping("")
     public BaseResponse<?> userInformation(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
-        return BaseResponse.onSuccess(usersService.userInformation(userId));
+        String userStudentId = user.getStudentId();
+        Users users = usersService.userProfile(userId);
+        List follower = (List) usersService.followerListNum(userStudentId); // 팔로우 목록
+        List following = (List) usersService.followingListNum(userStudentId); // 팔로잉 목록
+
+        return BaseResponse.onSuccess(UsersConverter.toUserProfileDTO(users, follower.size(), following.size()));
+    }
+
+    // 유저 정보 반환
+    @Operation(summary = "유저 정보 반환", description = "유저의 이름, 닉네임, 학과, 학년, 공개/비공개")
+    @GetMapping("/inform")
+    public BaseResponse<?> userInformation2(@AuthenticationPrincipal Users user) {
+        Long userId = user.getUserId();
+        String userStudentId = user.getStudentId();
+        Users users = usersService.userProfile(userId);
+
+        return BaseResponse.onSuccess(UsersConverter.toUserInformation2(users));
+    }
+
+
+    // 개인정보 수정 클릭하면 수정가능한 정보들이 보임
+    @Operation(summary = "수정 가능한 개인정보 조회", description = "개인정보 수정으로 진입하면 수정가능한 정보들을 우선 보여준다.")
+    @GetMapping("account/present")
+    public BaseResponse<UsersResponseDTO.ExistUserDTO> updateInformation(@AuthenticationPrincipal Users user) {
+        Long userId = user.getUserId();
+        Users information = usersService.beforeUpdateInformation(userId);
+        return BaseResponse.onSuccess(UsersConverter.toUserShowDTO(information));
     }
 
     // 개인정보 수정
+    @Operation(summary = "개인정보 수정 요청", description = "개인정보 수정 요청을 보낸다.")
     @PatchMapping("account/update")
     public BaseResponse<UsersResponseDTO.UserPreviewDTO> updateAccount(@RequestBody UsersRequestDTO.UpdateUserDTO updateUserDTO, @AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -98,6 +111,7 @@ public class UsersController {
     }
 
     // 계정 비공개 설정
+    @Operation(summary = "계정 비공개 설정", description = "true는 공개, false는 비공개")
     @PatchMapping("account/private")
     public BaseResponse<?> privateAccount(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -106,6 +120,7 @@ public class UsersController {
     }
 
     // 계정 공개 설정
+    @Operation(summary = "계정 공개 설정", description = "true는 공개, false는 비공개")
     @PatchMapping("account/public")
     public BaseResponse<?> publicAccount(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
@@ -113,6 +128,13 @@ public class UsersController {
         return BaseResponse.onSuccess("공개 설정 완료");
     }
 
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("account/withdrawal")
+    public BaseResponse<?> withdrawal(@AuthenticationPrincipal Users user) {
+//        Long userId = user.getUserId();
+        usersService.withdrawal(user);
+        return BaseResponse.onSuccess("계정 탈퇴 완료");
+    }
 
 
 

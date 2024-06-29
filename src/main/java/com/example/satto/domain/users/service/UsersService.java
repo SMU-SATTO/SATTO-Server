@@ -1,5 +1,6 @@
 package com.example.satto.domain.users.service;
 
+import com.example.satto.domain.mail.dto.EmailRequestDTO;
 import com.example.satto.domain.users.dto.UsersRequestDTO;
 import com.example.satto.domain.users.entity.Users;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -8,11 +9,16 @@ public interface UsersService {
 
     UserDetailsService userDetailsService();
 
-    Object viewFollowerList(Long userId);
+    Object viewFollowerList(String studentId);
 
-    Object viewFollowingList(Long userId);
+    Object viewFollowingList(String studentId);
 
-    Users userInformation(Long user);
+    Object followerListNum(String studentId);
+
+    Object followingListNum(String studentId);
+
+
+    Users userProfile(Long user);
 
     void privateAccount(Long userId);
 
@@ -24,7 +30,13 @@ public interface UsersService {
 
     Users uploadProfileImg(String url, String email);
 
-    boolean passwordCheck(String firstPassword, String secondPassword);
-
     boolean nicknameDuplicate(String nickname);
+
+    void withdrawal(Users user);
+
+    Users beforeUpdateInformation(Long userId);
+
+    boolean studentIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest);
+
+    Users userProfile(String studentId);
 }

@@ -17,9 +17,40 @@ public class UsersResponseDTO {
         private String name;
         private String nickname;
         private String department;
-        private String profileImg;
+        private int grade;
+//        private String profileImg;
         private LocalDateTime createdAt;
         private LocalDateTime updateAt;
     }
+
+    @Getter
+    @Builder
+    public static class ExistUserDTO {
+        private String name;
+        private String nickname;
+        private String department;
+        private int grade;
+    }
+
+    @Getter
+    @Builder
+    public static class UserProfileDTO {
+        private String studentId;
+        private String name;
+        private int followingNum;
+        private int followerNum;
+    }
+    @Getter
+    @Builder
+    public static class UserInformation2 {
+        private String studentId;
+        private String name;
+        private String nickname;
+        private String department;
+        private int grade;
+        private boolean isPublic;
+    }
+
+
 
 }

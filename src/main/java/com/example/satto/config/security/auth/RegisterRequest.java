@@ -13,11 +13,12 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
 
     //  private String profileImg;
-    private int studentId;
+    private String studentId;
     private String email;
     private String password;
     private String name;
     private String nickname;
     private String department;
-    private Byte isPublic;
+    private int grade;
+    private boolean isPublic;
 }

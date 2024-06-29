@@ -46,7 +46,7 @@ public class Users extends BaseEntity implements UserDetails {
     private String department;
 
     @Column(name = "student_id", nullable = false)
-    private int studentId;
+    private String studentId;
 
     @Column(nullable = false)
     private String email;
@@ -55,7 +55,7 @@ public class Users extends BaseEntity implements UserDetails {
     private String password;
 
     @Column(name = "is_public", nullable = false)
-    private Byte isPublic;  // 0 이면 비공개  1 이면 공개
+    private boolean isPublic;  // true는 공개, false는 비공개
 
     private Role role;
 
@@ -96,7 +96,7 @@ public class Users extends BaseEntity implements UserDetails {
     // Token
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users", cascade = CascadeType.REMOVE)
     private List<Token> tokens;
 
     // UserDeatails 구현

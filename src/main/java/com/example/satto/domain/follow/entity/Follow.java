@@ -4,6 +4,7 @@ import com.example.satto.domain.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
@@ -27,6 +28,12 @@ public class Follow {
 
     private int request;
 
+    @CreationTimestamp
     @Column(name = "follow_date")
     private LocalDate followDate;
+
+    @Override
+    public String toString() {
+        return followerId != null ? followerId.getStudentId() : "null";
+    }
 }

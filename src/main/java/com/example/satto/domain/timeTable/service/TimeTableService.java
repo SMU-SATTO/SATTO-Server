@@ -4,11 +4,13 @@ import com.example.satto.domain.currentLecture.converter.CurrentLectureConverter
 import com.example.satto.domain.currentLecture.dto.CurrentLectureResponseDTO;
 import com.example.satto.domain.currentLecture.entity.CurrentLecture;
 import com.example.satto.domain.currentLecture.repository.CurrentLectureRepository;
-import com.example.satto.domain.timeTable.dto.MajorCombinationResponseDTO;
-import com.example.satto.domain.timeTable.dto.TimeTableRequestDTO;
-import com.example.satto.domain.timeTable.dto.TimeTableResponseDTO;
+import com.example.satto.domain.timeTable.dto.*;
+import com.example.satto.domain.timeTable.entity.TimeTable;
 import com.example.satto.domain.timeTable.repository.TimeTableRepository;
+import com.example.satto.domain.timeTableLecture.entity.TimeTableLecture;
+import com.example.satto.domain.timeTableLecture.repository.TimeTableLectureRepository;
 import com.example.satto.domain.users.entity.Users;
+import com.example.satto.domain.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +23,16 @@ public class TimeTableService {
 
     private final CurrentLectureRepository currentLectureRepository;
     private final TimeTableRepository timeTableRepository;
+    private final UsersRepository usersRepository;
+    private final TimeTableLectureRepository timeTableLectureRepository;
 
 
     //강의 시간 충돌 검사
-    public static boolean isNotTimeConflict(List<CurrentLectureResponseDTO> lectList,
-                                            CurrentLectureResponseDTO lect) {
+    public static boolean isNotTimeConflict(List<TimeTableResponseDTO.TimeTableLectureDTO> lectList,
+                                            TimeTableResponseDTO.TimeTableLectureDTO lect) {
 
         String[] lectTimeSegments = lect.lectTime().split(" "); // 한 번만 분리
-        for (CurrentLectureResponseDTO existingLect : lectList) {
+        for (TimeTableResponseDTO.TimeTableLectureDTO existingLect : lectList) {
             for (String segment : lectTimeSegments) {
                 if (existingLect.lectTime().contains(segment)) {
                     return false; // 충돌 발견 시 즉시 반환
@@ -39,10 +43,10 @@ public class TimeTableService {
 
     }
     //학수번호 충돌 검사
-    public static boolean isNotLectNumberConfilct(List<CurrentLectureResponseDTO> lectList,
-                                                  CurrentLectureResponseDTO lect) {
+    public static boolean isNotLectNumberConfilct(List<TimeTableResponseDTO.TimeTableLectureDTO> lectList,
+                                                  TimeTableResponseDTO.TimeTableLectureDTO lect) {
 
-        for (CurrentLectureResponseDTO existingLect : lectList) {
+        for (TimeTableResponseDTO.TimeTableLectureDTO existingLect : lectList) {
             if (existingLect.code().equals(lect.code())) {
                 return false; // 같은 강의 번호 발견 시 즉시 반환
             }
@@ -50,15 +54,15 @@ public class TimeTableService {
         return true; // 충돌 없음
     }
 
-    public static boolean isNotConflict(List<CurrentLectureResponseDTO> currentLect, CurrentLectureResponseDTO lect) {
+    public static boolean isNotConflict(List<TimeTableResponseDTO.TimeTableLectureDTO> currentLect, TimeTableResponseDTO.TimeTableLectureDTO lect) {
         return currentLect.isEmpty() || (isNotTimeConflict(currentLect, lect) && isNotLectNumberConfilct(currentLect, lect));
     }
 
     //시간표 조합 알고리즘
-    private void generateCombinations(List<CurrentLectureResponseDTO> majorLectures,
+    private void generateCombinations(List<TimeTableResponseDTO.TimeTableLectureDTO> majorLectures,
                                       int start,
-                                      List<CurrentLectureResponseDTO> current,
-                                      List<List<CurrentLectureResponseDTO>> result,
+                                      List<TimeTableResponseDTO.TimeTableLectureDTO> current,
+                                      List<List<TimeTableResponseDTO.TimeTableLectureDTO>> result,
                                       int targetSize
     ) {
         if (current.size() == targetSize) {
@@ -67,7 +71,7 @@ public class TimeTableService {
         }
 
         for (int i = start; i < majorLectures.size(); i++) {
-            CurrentLectureResponseDTO nextMajorLecture = majorLectures.get(i);
+            TimeTableResponseDTO.TimeTableLectureDTO nextMajorLecture = majorLectures.get(i);
             if (isNotConflict(current, nextMajorLecture)) {
                 current.add(nextMajorLecture);
                 generateCombinations(majorLectures, i + 1, current, result, targetSize);
@@ -76,39 +80,51 @@ public class TimeTableService {
         }
     }
 
-    public List<MajorCombinationResponseDTO> createMajorTimeTable(TimeTableRequestDTO createDTO, Users users) {
+    public List<TimeTableResponseDTO.MajorCombinationResponseDTO> createMajorTimeTable(MajorTimeTableRequestDTO createDTO, Users users) {
 
         //3학년 1학기 4전공 선택 기준
         List<CurrentLecture> majorLectList = currentLectureRepository.findCurrentLectureByDepartmentAndGrade(users.getDepartment(), users.getGrade());
-        List<CurrentLectureResponseDTO> majorLectDetailList = CurrentLectureConverter.toCurrentLectureDtoList(majorLectList);
+        List<TimeTableResponseDTO.TimeTableLectureDTO> majorLectDetailList = TimeTableResponseDTO.TimeTableLectureDTO.fromList(majorLectList);
 
-        List<CurrentLectureResponseDTO> lectDetailList = new ArrayList<>();
-        List<List<CurrentLectureResponseDTO>> timeTable = new ArrayList<>();
-        List<TimeTableResponseDTO> result;
+        List<TimeTableResponseDTO.TimeTableLectureDTO> lectDetailList = new ArrayList<>();
+        List<List<TimeTableResponseDTO.TimeTableLectureDTO>> timeTable = new ArrayList<>();
+        List<TimeTableResponseDTO.EntireTimeTableResponseDTO> result;
 
         List<CurrentLecture> requiredLectList = new ArrayList<>();
-        for( String lect : createDTO.requiredLect() ){
-            requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lect));
-        }
+        List<TimeTableResponseDTO.TimeTableLectureDTO> requiredLectDetailList = new ArrayList<>();
 
-        List<CurrentLectureResponseDTO> requiredLectDetailList = CurrentLectureConverter.toCurrentLectureDtoList(requiredLectList);
+        if(!createDTO.requiredLect().get(0).isEmpty()) {
+
+            for (String lectCodeSection : createDTO.requiredLect()) {
+                requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lectCodeSection));
+            }
+
+            requiredLectDetailList = TimeTableResponseDTO.TimeTableLectureDTO.fromList(requiredLectList);
+            generateCombinations(requiredLectDetailList, 0, lectDetailList, timeTable, requiredLectDetailList.size());
+        }
 
         majorLectDetailList = removeLecturesInImpossibleTimeZones(majorLectDetailList, createDTO.impossibleTimeZone());
 
         //필수로 들어야할 강의 우선 조합
-        generateCombinations(requiredLectDetailList, 0, lectDetailList, timeTable, requiredLectDetailList.size());
 
         generateCombinations(majorLectDetailList, 0, lectDetailList, timeTable, createDTO.majorCount() + requiredLectDetailList.size());
-        result = TimeTableResponseDTO.fromList(timeTable);
-        System.out.println("전공 강의 조합 개수 : " + timeTable.size());
+        result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
 
-        List<TimeTableResponseDTO> result1 = createTimeTable(createDTO, result);
+        List<Integer> toRemoveIndexes = new ArrayList<>();
 
-        return calculateMajorCombinations(result1);
+        for( int i = 0; i < result.size(); i++){
+            if(result.get(i).timeTable().size() == 0) {toRemoveIndexes.add(i);}
+        }
+        Collections.reverse(toRemoveIndexes);
+        for (int index : toRemoveIndexes) {
+            result.remove(index);
+        }
+
+        return calculateMajorCombinations(result);
     }
 
     //시간대 벤 로직
-    public List<CurrentLectureResponseDTO> removeLecturesInImpossibleTimeZones(List<CurrentLectureResponseDTO> majorLectDetailList, String impossibleTimeZones) {
+    public List<TimeTableResponseDTO.TimeTableLectureDTO> removeLecturesInImpossibleTimeZones(List<TimeTableResponseDTO.TimeTableLectureDTO> majorLectDetailList, String impossibleTimeZones) {
 
         if (impossibleTimeZones == null || impossibleTimeZones.trim().isEmpty()) {
             return majorLectDetailList;
@@ -131,41 +147,75 @@ public class TimeTableService {
     }
 
     //전공 조합의 개수 계산
-    public List<MajorCombinationResponseDTO> calculateMajorCombinations(List<TimeTableResponseDTO> result) {
-        Map<Set<String>, Integer> combinationCounts = new HashMap<>();
+    public List<TimeTableResponseDTO.MajorCombinationResponseDTO> calculateMajorCombinations(List<TimeTableResponseDTO.EntireTimeTableResponseDTO> result) {
+        Map<Set<TimeTableResponseDTO.LectureCombination>, Integer> combinationCounts = new HashMap<>();
 
-        for (TimeTableResponseDTO data : result) {
-            Set<String> sbjNames = data.timeTable().stream()
+        for (TimeTableResponseDTO.EntireTimeTableResponseDTO data : result) {
+            Set<TimeTableResponseDTO.LectureCombination> sbjCombinations = data.timeTable().stream()
                     .filter(lecture -> "1전심".equals(lecture.cmpDiv()) || "1전선".equals(lecture.cmpDiv()))
-                    .map(CurrentLectureResponseDTO::lectName)
+                    .map(lecture -> new TimeTableResponseDTO.LectureCombination(lecture.lectName(), lecture.code()))
                     .collect(Collectors.toSet());
 
-            combinationCounts.merge(sbjNames, 1, Integer::sum);
+            combinationCounts.merge(sbjCombinations, 1, Integer::sum);
         }
 
-        return combinationCounts.entrySet().stream()
-                .map(entry -> new MajorCombinationResponseDTO(entry.getKey(), entry.getValue()))
+        // 중복되지 않는 조합만 리스트로 변환
+        return combinationCounts.keySet().stream()
+                .map(sbjCombinations -> new TimeTableResponseDTO.MajorCombinationResponseDTO(sbjCombinations))
                 .collect(Collectors.toList());
     }
 
-    public List<TimeTableResponseDTO> createTimeTable(TimeTableRequestDTO createDTO, List<TimeTableResponseDTO> majorTimetable) {
+    public List<TimeTableResponseDTO.EntireTimeTableResponseDTO> createTimeTable(EntireTimeTableRequestDTO createDTO) {
 
         List<CurrentLecture> entireLect = currentLectureRepository.findLectByCmpDiv("교선");
-        List<CurrentLectureResponseDTO> entireLectList = CurrentLectureConverter.toCurrentLectureDtoList(entireLect);
+        List<TimeTableResponseDTO.TimeTableLectureDTO> entireLectList = TimeTableResponseDTO.TimeTableLectureDTO.fromList(entireLect);
 
-        List<CurrentLectureResponseDTO> lectDetailList = new ArrayList<>();
-        List<List<CurrentLectureResponseDTO>> timeTable = new ArrayList<>();
-        List<TimeTableResponseDTO> result;
+        Set<String> majorSet = new HashSet<>();
+        List<CurrentLecture> majorList = new ArrayList<>();
 
-        entireLectList = removeLecturesInImpossibleTimeZones(entireLectList, createDTO.impossibleTimeZone());
-        Collections.shuffle(entireLectList);
-        List<CurrentLectureResponseDTO> randomList = entireLectList.subList(0,10);
-
-        for(TimeTableResponseDTO lect : majorTimetable){
-            generateCombinations1212(randomList, 0, lect.timeTable(), timeTable, createDTO.maxGPA());
+        for (List<String> majors : createDTO.majorList()){
+            majorSet.addAll(majors);
         }
 
-        result = TimeTableResponseDTO.fromList(timeTable);
+        for (String majorName : majorSet){
+            majorList.addAll(currentLectureRepository.findCurrentLecturesByCode(majorName));
+        }
+
+        List<TimeTableResponseDTO.TimeTableLectureDTO> majorLectDetailList = TimeTableResponseDTO.TimeTableLectureDTO.fromList(majorList);
+
+
+        List<TimeTableResponseDTO.TimeTableLectureDTO> lectDetailList = new ArrayList<>();
+        List<List<TimeTableResponseDTO.TimeTableLectureDTO>> majorTimeTable = new ArrayList<>();
+        List<List<TimeTableResponseDTO.TimeTableLectureDTO>> timeTable = new ArrayList<>();
+        List<TimeTableResponseDTO.EntireTimeTableResponseDTO> result;
+
+        entireLectList = removeLecturesInImpossibleTimeZones(entireLectList, createDTO.impossibleTimeZone());
+
+        //임의 교양 리스트 생성
+//        Collections.shuffle(entireLectList);
+//        List<CurrentLectureResponseDTO> randomList = entireLectList.subList(0,10);
+        List<CurrentLecture> requiredLectList = new ArrayList<>();
+        List<TimeTableResponseDTO.TimeTableLectureDTO> requiredLectDetailList = new ArrayList<>();
+        if(!createDTO.requiredLect().isEmpty()) {
+            for (String lect : createDTO.requiredLect()) {
+                requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lect));
+            }
+
+            requiredLectDetailList = TimeTableResponseDTO.TimeTableLectureDTO.fromList(requiredLectList);
+
+            //필수로 들어야할 강의 우선 조합
+            generateCombinations(requiredLectDetailList, 0, lectDetailList, majorTimeTable, requiredLectDetailList.size());
+            generateCombinations(majorLectDetailList, 0, lectDetailList, majorTimeTable, createDTO.majorCount() + requiredLectDetailList.size());
+        }
+        generateCombinations(majorLectDetailList, 0, lectDetailList, majorTimeTable, createDTO.majorCount());
+
+        result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
+
+        for(List<TimeTableResponseDTO.TimeTableLectureDTO> lect : majorTimeTable){
+            generateCombinations1212(entireLectList, 0, lect, timeTable, createDTO.GPA()-createDTO.cyberCount()*3);
+        }
+
+        result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
         optimizationTimeTable(result);
         optimizationTimeTable2(result);
         optimizationTimeTable3(result);
@@ -176,11 +226,88 @@ public class TimeTableService {
         return  result;
     }
 
+    public Long createTimeTable(TimeTableSelectRequestDTO selectRequestDTO, Users users){
+
+        List<TimeTable> timeTables = timeTableRepository.findAllByUserId(users.getUserId());
+
+        if (selectRequestDTO.isRepresented()) {
+            for (TimeTable tt : timeTables) {
+                if (tt.getSemesterYear().equals(selectRequestDTO.semesterYear()) && tt.getIsRepresented()) {
+                    throw new IllegalStateException("이미 해당 학기의 대표 시간표가 존재합니다.");
+                }
+            }
+        }
+        TimeTable timeTable = timeTableRepository.save(selectRequestDTO.to(users));
+        return timeTable.getTimetableId();
+    }
+
+    public TimeTableResponseDTO.SelectTimeTableResponseDTO getRepresentTimeTable(Users users) {
+        // 가장 최근 생성된 대표 시간표를 가져옴
+        TimeTable timeTable = timeTableRepository.findLatestRepresentedTimeTableByUserId(users.getUserId());
+        if (timeTable == null) {
+            throw new IllegalStateException("대표 시간표가 존재하지 않습니다.");
+        }
+
+        List<TimeTableLecture> lectures = timeTableLectureRepository.findTimeTableLecturesByTimeTableId(timeTable.getTimetableId());
+        List<CurrentLecture> currentLectures = new ArrayList<>();
+        for (TimeTableLecture t : lectures) {
+            currentLectures.add(t.getCurrentLecture());
+        }
+
+        List<TimeTableResponseDTO.TimeTableLectureDTO> timeTableLectures = TimeTableResponseDTO.TimeTableLectureDTO.fromList(currentLectures);
+        return TimeTableResponseDTO.SelectTimeTableResponseDTO.from(timeTableLectures, timeTable);
+    }
+
+    public List<TimeTableResponseDTO.timeTableListDTO> getTimeTableList(Users users){
+        List<TimeTable> timeTables = timeTableRepository.findAllByUserId(users.getUserId());
+        return TimeTableResponseDTO.timeTableListDTO.fromList(timeTables);
+    }
+
+    public TimeTableResponseDTO.SelectTimeTableResponseDTO getTimeTable(Long timeTableId){
+        TimeTable timeTable = timeTableRepository.findById(timeTableId).orElseThrow();
+        List<TimeTableLecture> lectures = timeTableLectureRepository.findTimeTableLecturesByTimeTableId(timeTableId);
+        List<CurrentLecture> currentLectures = new ArrayList<>();
+        for( TimeTableLecture t : lectures ){
+            currentLectures.add(t.getCurrentLecture());
+        }
+        List<TimeTableResponseDTO.TimeTableLectureDTO> timeTableLectures = TimeTableResponseDTO.TimeTableLectureDTO.fromList(currentLectures);
+        return TimeTableResponseDTO.SelectTimeTableResponseDTO.from(timeTableLectures,timeTable);
+    }
+
+    public void updateTimeTableIsPublic(Long timeTableId, updateTimeTableRequestDTO isPublic){
+        TimeTable timeTable = timeTableRepository.findById(timeTableId).orElseThrow();
+        timeTable.updateIsPublic(isPublic.state());
+        timeTableRepository.save(timeTable);
+    }
+
+    public void updateTimeTableIsRepresented(Long timeTableId, updateTimeTableRequestDTO isRepresented, Users users){
+        TimeTable timeTable = timeTableRepository.findById(timeTableId).orElseThrow();
+        List<TimeTable> timeTables = timeTableRepository.findAllByUserId(users.getUserId());
+
+        if (isRepresented.state()) {
+            for (TimeTable tt : timeTables) {
+                if (tt.getSemesterYear().equals(timeTable.getSemesterYear()) && tt.getIsRepresented()) {
+                    throw new IllegalStateException("이미 해당 학기의 대표 시간표가 존재합니다.");
+                }
+            }
+        }
+
+        timeTable.updateIdRepresented(isRepresented.state());
+        timeTableRepository.save(timeTable);
+    }
+
+    public void deleteTimeTable(Long timeTableId){
+        List<TimeTableLecture> timeTableLectures = timeTableLectureRepository.findTimeTableLecturesByTimeTableId(timeTableId);
+        TimeTable timeTable = timeTableRepository.findById(timeTableId).orElseThrow();
+        timeTableLectureRepository.deleteAll(timeTableLectures);
+        timeTableRepository.delete(timeTable);
+    }
+
     //시간표 조합 알고리즘
-    private void generateCombinations1212(List<CurrentLectureResponseDTO> majorLectures,
+    private void generateCombinations1212(List<TimeTableResponseDTO.TimeTableLectureDTO> majorLectures,
                                           int start,
-                                          List<CurrentLectureResponseDTO> current,
-                                          List<List<CurrentLectureResponseDTO>> result,
+                                          List<TimeTableResponseDTO.TimeTableLectureDTO> current,
+                                          List<List<TimeTableResponseDTO.TimeTableLectureDTO>> result,
                                           int targetSize
     ) {
         int currentCredits = current.stream().mapToInt(lecture -> lecture.credit()).sum();
@@ -190,7 +317,7 @@ public class TimeTableService {
         }
 
         for (int i = start; i < majorLectures.size(); i++) {
-            CurrentLectureResponseDTO nextMajorLecture = majorLectures.get(i);
+            TimeTableResponseDTO.TimeTableLectureDTO nextMajorLecture = majorLectures.get(i);
             int nextCredits = currentCredits + nextMajorLecture.credit();
             if (nextCredits <= targetSize && isNotConflict(current, nextMajorLecture)) {
                 current.add(nextMajorLecture);
@@ -200,7 +327,7 @@ public class TimeTableService {
         }
     }
     //공강이 3시간 이상 존재하는 경우 제거
-    public List<TimeTableResponseDTO> optimizationTimeTable(List<TimeTableResponseDTO> timeTables){
+    public List<TimeTableResponseDTO.EntireTimeTableResponseDTO> optimizationTimeTable(List<TimeTableResponseDTO.EntireTimeTableResponseDTO> timeTables){
 
         List<Integer> toRemoveIndexes = new ArrayList<>();
         for(int i = 0; i < timeTables.size(); i++){
@@ -248,7 +375,7 @@ public class TimeTableService {
     }
 
     //하루에 강의가 1시간만 있는 경우 제거
-    public List<TimeTableResponseDTO> optimizationTimeTable2(List<TimeTableResponseDTO> timeTables) {
+    public List<TimeTableResponseDTO.EntireTimeTableResponseDTO> optimizationTimeTable2(List<TimeTableResponseDTO.EntireTimeTableResponseDTO> timeTables) {
         // 제거하기 위한 인덱스 리스트
         List<Integer> toRemoveIndexes = new ArrayList<>();
 
@@ -284,7 +411,7 @@ public class TimeTableService {
     }
 
     //공강일이 없는 경우 제거
-    public List<TimeTableResponseDTO> optimizationTimeTable3(List<TimeTableResponseDTO> timeTables) {
+    public List<TimeTableResponseDTO.EntireTimeTableResponseDTO> optimizationTimeTable3(List<TimeTableResponseDTO.EntireTimeTableResponseDTO> timeTables) {
         // 제거하기 위한 인덱스 리스트
         List<Integer> toRemoveIndexes = new ArrayList<>();
 
@@ -319,7 +446,7 @@ public class TimeTableService {
     }
 
     //7시간 이상 연속으로 강의가 존재하는 시간표 제외
-    public List<TimeTableResponseDTO> optimizationTimeTable4(List<TimeTableResponseDTO> timeTables){
+    public List<TimeTableResponseDTO.EntireTimeTableResponseDTO> optimizationTimeTable4(List<TimeTableResponseDTO.EntireTimeTableResponseDTO> timeTables){
 
         List<Integer> toRemoveIndexes = new ArrayList<>();
         for(int i = 0; i < timeTables.size(); i++){
@@ -376,7 +503,7 @@ public class TimeTableService {
     }
 
     //0교시, 1교시, 2교시 강의가 존재하는 시간표 제외
-    public List<TimeTableResponseDTO> optimizationTimeTable5(List<TimeTableResponseDTO> timeTables) {
+    public List<TimeTableResponseDTO.EntireTimeTableResponseDTO> optimizationTimeTable5(List<TimeTableResponseDTO.EntireTimeTableResponseDTO> timeTables) {
 
         List<Integer> toRemoveIndexes = new ArrayList<>();
         for (int i = 0; i < timeTables.size(); i++) {
@@ -397,7 +524,7 @@ public class TimeTableService {
     }
 
     //9시~11시 중 강의가 있고 12시 이후에도 강의가 있는 경우 점심시간(11시~13시중 1시간)이 확보되지 않은 시간표 제외
-    public List<TimeTableResponseDTO> optimizationTimeTable6(List<TimeTableResponseDTO> timeTables){
+    public List<TimeTableResponseDTO.EntireTimeTableResponseDTO> optimizationTimeTable6(List<TimeTableResponseDTO.EntireTimeTableResponseDTO> timeTables){
 
         List<Integer> toRemoveIndexes = new ArrayList<>();
         for(int i = 0; i < timeTables.size(); i++){
