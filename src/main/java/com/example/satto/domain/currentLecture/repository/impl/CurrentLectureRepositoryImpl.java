@@ -76,6 +76,7 @@ public class CurrentLectureRepositoryImpl implements CurrentLectureRepositoryCus
                 .select(Projections.constructor(CurrentLectureResponseDTO.class,
                         lecture.department,
                         lecture.code,
+                        lecture.codeSection,
                         lecture.lectName,
                         lecture.professor,
                         lecture.lectTime,
