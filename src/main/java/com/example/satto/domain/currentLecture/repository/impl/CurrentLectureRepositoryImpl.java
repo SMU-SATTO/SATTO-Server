@@ -20,13 +20,16 @@ public class CurrentLectureRepositoryImpl implements CurrentLectureRepositoryCus
 
     @Override
     public List<CurrentLectureResponseDTO> findLectures(
-            List<String> codeSection, List<Integer> grade, int elective,
+            String lectName, List<String> codeSection, List<Integer> grade, int elective,
             int normal, int essential, byte humanity, byte society,
             byte nature, byte engineering, byte art, byte isCyber, List<String> timeZone) {
 
         QCurrentLecture lecture = QCurrentLecture.currentLecture;
         BooleanBuilder builder = new BooleanBuilder();
 
+        if (lectName != null && !lectName.isEmpty()) {
+            builder.and(lecture.lectName.in(lectName));
+        }
         if (codeSection != null && !codeSection.isEmpty()) {
             builder.and(lecture.codeSection.in(codeSection));
         }
