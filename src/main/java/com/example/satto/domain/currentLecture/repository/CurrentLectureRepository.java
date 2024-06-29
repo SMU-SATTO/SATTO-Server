@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @Repository
-public interface CurrentLectureRepository extends JpaRepository<CurrentLecture, String> {
+public interface CurrentLectureRepository extends JpaRepository<CurrentLecture, String>, CurrentLectureRepositoryCustom {
 
     List<CurrentLecture> findCurrentLectureByDepartmentAndGrade(String department, int grade);
 

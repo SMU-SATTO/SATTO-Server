@@ -55,6 +55,12 @@ dependencies {
 
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	//querydsl
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 // gradlew build task를 진행하면 builds/libs 폴더에 jar파일이 두 개 생성됨
@@ -63,6 +69,24 @@ dependencies {
 // 따라서 gradle build시 -plain 제외한 하나의 jar파일만 나오게 하기 위해 추가하는 옵션
 jar {
 	enabled = false
+}
+
+// QueryDsl 설정
+def generated = 'src/main/generated'
+
+// QueryDsl QClass 파일 생성 위치 지정
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(generated)
+}
+
+// java source set에 QueryDsl 위치 추가
+sourceSets {
+	main.java.srcDirs += "$projectDir/build/generated"
+}
+
+// gradle clean시 QClass 디렉토리 삭제
+clean {
+	delete file(generated)
 }
 
 tasks.named('test') {
