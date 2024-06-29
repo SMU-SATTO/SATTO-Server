@@ -62,9 +62,13 @@ public class CurrentLectureRepositoryImpl implements CurrentLectureRepositoryCus
         }
         if (timeZone != null && !timeZone.isEmpty()) {
             for (String time : timeZone) {
-                String likePattern = "%" + time + "%";
+                String likePattern = "%" + time + " %";
+                String likePattern2 = "% " + time + " %";
+                String likePattern3 = "% " + time;
                 BooleanExpression lectTimeTemplate = lecture.lectTime.like(likePattern);
-                builder.and(lectTimeTemplate);
+                BooleanExpression lectTimeTemplate2 = lecture.lectTime.like(likePattern2);
+                BooleanExpression lectTimeTemplate3 = lecture.lectTime.like(likePattern3);
+                builder.and(lectTimeTemplate.or(lectTimeTemplate2).or(lectTimeTemplate3));
             }
         }
 
