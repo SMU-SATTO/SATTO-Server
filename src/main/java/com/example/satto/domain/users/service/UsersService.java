@@ -39,4 +39,6 @@ public interface UsersService {
     boolean studentIdDuplicate(EmailRequestDTO.EmailCheckRequest emailCheckRequest);
 
     Users userProfile(String studentId);
+
+    void resetPassword(UsersRequestDTO.UpdateUserPasswordDTO updateUserPasswordDTO, Long userId);
 }

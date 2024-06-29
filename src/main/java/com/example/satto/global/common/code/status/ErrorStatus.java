@@ -4,6 +4,7 @@ import com.example.satto.global.common.code.BaseErrorCode;
 import com.example.satto.global.common.code.ErrorReasonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.http.protocol.HTTP;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -23,15 +24,16 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // User 에러
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER400", "사용자가 존재하지 않습니다."),
+    _INVALID_USER(HttpStatus.BAD_REQUEST, "USER401" , "아이디 또는 비밀번호가 틀렸습니다."),
 
     // Follow 에러
     _NOT_FOUND_FOLLOWING_LIST(HttpStatus.NOT_FOUND, "FOLLOW400", "사용자가 존재하지 않습니다."),
 
 
-    // Event 에러
+    // Event 에러,
     _NOT_FOUND_EVENT(HttpStatus.NOT_FOUND, "EVENT400", "해당 이벤트가 존재하지 않습니다."),
 
-    // Security 에러
+    // Security 에러,
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "SEC4001", "잘못된 형식의 토큰입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SEC4010", "인증이 필요합니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "SEC4011", "토큰이 만료되었습니다."),

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,8 @@ public class UsersServiceImpl implements UsersService {
     private final UsersRepository usersRepository;
     private final FollowRepository followRepository;
     private final TokenRepository tokenRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -205,6 +208,13 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Users userProfile(String studentId) {
         return usersRepository.findByStudentId(studentId).orElseThrow(() -> new UsersHandler(ErrorStatus._NOT_FOUND_USER));
+    }
+
+    @Override
+    public void resetPassword(UsersRequestDTO.UpdateUserPasswordDTO updateUserPasswordDTO, Long userId) {
+        Users user = usersRepository.findById(userId).orElseThrow(() -> new UsersHandler(ErrorStatus._NOT_FOUND_USER));
+        user.setPassword(passwordEncoder.encode(updateUserPasswordDTO.getPassword()));
+        usersRepository.save(user);
     }
 
 }
