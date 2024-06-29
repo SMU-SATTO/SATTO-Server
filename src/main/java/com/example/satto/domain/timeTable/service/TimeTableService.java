@@ -101,13 +101,14 @@ public class TimeTableService {
 
             requiredLectDetailList = TimeTableResponseDTO.TimeTableLectureDTO.fromList(requiredLectList);
             generateCombinations(requiredLectDetailList, 0, lectDetailList, timeTable, requiredLectDetailList.size());
+            generateCombinations(majorLectDetailList, 0, lectDetailList, timeTable, createDTO.majorCount() + requiredLectDetailList.size());
         }
 
         majorLectDetailList = removeLecturesInImpossibleTimeZones(majorLectDetailList, createDTO.impossibleTimeZone());
 
         //필수로 들어야할 강의 우선 조합
 
-        generateCombinations(majorLectDetailList, 0, lectDetailList, timeTable, createDTO.majorCount() + requiredLectDetailList.size());
+        generateCombinations(majorLectDetailList, 0, lectDetailList, timeTable, createDTO.majorCount());
         result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
 
         List<Integer> toRemoveIndexes = new ArrayList<>();
@@ -196,7 +197,7 @@ public class TimeTableService {
 //        List<CurrentLectureResponseDTO> randomList = entireLectList.subList(0,10);
         List<CurrentLecture> requiredLectList = new ArrayList<>();
         List<TimeTableResponseDTO.TimeTableLectureDTO> requiredLectDetailList = new ArrayList<>();
-        if(!createDTO.requiredLect().isEmpty()) {
+        if(!createDTO.requiredLect().get(0).isEmpty()) {
             for (String lect : createDTO.requiredLect()) {
                 requiredLectList.add(currentLectureRepository.findCurrentLectureByCodeSection(lect));
             }
@@ -209,7 +210,6 @@ public class TimeTableService {
         }
         generateCombinations(majorLectDetailList, 0, lectDetailList, majorTimeTable, createDTO.majorCount());
 
-        result = TimeTableResponseDTO.EntireTimeTableResponseDTO.fromList(timeTable);
 
         for(List<TimeTableResponseDTO.TimeTableLectureDTO> lect : majorTimeTable){
             generateCombinations1212(entireLectList, 0, lect, timeTable, createDTO.GPA()-createDTO.cyberCount()*3);
