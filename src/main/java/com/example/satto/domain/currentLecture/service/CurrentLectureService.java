@@ -17,7 +17,6 @@ public class CurrentLectureService {
     public List<CurrentLectureResponseDTO> getLectures(CurrentLectureRequestDto currentLectureRequestDto) {
         return currentLectureRepository.findLectures(
                 currentLectureRequestDto.lectName(),
-                currentLectureRequestDto.codeSection(),
                 currentLectureRequestDto.grade(),
                 currentLectureRequestDto.elective(),
                 currentLectureRequestDto.normal(),
