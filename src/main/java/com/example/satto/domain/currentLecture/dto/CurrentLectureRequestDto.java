@@ -7,7 +7,6 @@ import lombok.Builder;
 @Builder
 public record CurrentLectureRequestDto(
         String lectName,
-        List<String> codeSection,
         List<Integer> grade,
         Byte elective,
         Byte normal,

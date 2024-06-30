@@ -20,7 +20,7 @@ public class CurrentLectureRepositoryImpl implements CurrentLectureRepositoryCus
 
     @Override
     public List<CurrentLectureResponseDTO> findLectures(
-            String lectName, List<String> codeSection, List<Integer> grade, int elective,
+            String lectName, List<Integer> grade, int elective,
             int normal, int essential, byte humanity, byte society,
             byte nature, byte engineering, byte art, byte isCyber, List<String> timeZone) {
 
@@ -29,9 +29,6 @@ public class CurrentLectureRepositoryImpl implements CurrentLectureRepositoryCus
 
         if (lectName != null && !lectName.isEmpty()) {
             builder.and(lecture.lectName.in(lectName));
-        }
-        if (codeSection != null && !codeSection.isEmpty()) {
-            builder.and(lecture.codeSection.in(codeSection));
         }
         if (grade != null && !grade.isEmpty()) {
             builder.and(lecture.grade.in(grade));
