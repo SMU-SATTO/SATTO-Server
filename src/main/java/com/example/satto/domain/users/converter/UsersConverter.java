@@ -43,7 +43,7 @@ public class UsersConverter {
                 .nickname(user.getNickname())
                 .department(user.getDepartment())
                 .password(user.getPassword())
-                .email(user.getEmail())
+//                .email(user.getEmail())
                 .grade(user.getGrade())
                 .isPublic(user.isPublic())
                 .build();
