@@ -47,6 +47,8 @@ public class UsersResponseDTO {
         private String name;
         private String nickname;
         private String department;
+        private String password;
+        private String email;
         private int grade;
         private boolean isPublic;
     }
