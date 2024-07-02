@@ -31,6 +31,10 @@ public class UsersConverter {
         return UsersResponseDTO.UserProfileDTO.builder()
                 .name(user.getName())
                 .studentId(user.getStudentId())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .department(user.getDepartment())
+                .grade(user.getGrade())
                 .followingNum(followingNum)
                 .followerNum(followerNum)
                 .build();
