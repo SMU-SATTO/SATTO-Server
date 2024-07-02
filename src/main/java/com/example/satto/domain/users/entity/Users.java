@@ -9,6 +9,7 @@ import com.example.satto.domain.users.Role;
 import com.example.satto.global.common.BaseEntity;
 import com.example.satto.config.security.token.Token;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -54,6 +55,7 @@ public class Users extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @JsonProperty("isPublic")
     @Column(name = "is_public", nullable = false)
     private boolean isPublic;  // true는 공개, false는 비공개
 

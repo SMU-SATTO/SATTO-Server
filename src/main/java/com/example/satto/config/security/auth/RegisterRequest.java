@@ -19,6 +19,7 @@ public class RegisterRequest {
     private String name;
     private String nickname;
     private String department;
-    private int grade;    private boolean isPublic;
+    private int grade;
+    private boolean isPublic;
 
 }
