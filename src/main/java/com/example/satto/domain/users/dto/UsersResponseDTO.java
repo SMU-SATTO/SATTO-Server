@@ -38,6 +38,10 @@ public class UsersResponseDTO {
     public static class UserProfileDTO {
         private String studentId;
         private String name;
+        private String department;
+        private String nickname;
+        private String email;
+        private int grade;
         private int followingNum;
         private int followerNum;
     }
