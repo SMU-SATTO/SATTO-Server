@@ -1,6 +1,7 @@
 package com.example.satto.config.security.auth;
 
 import com.example.satto.domain.users.Role;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,8 @@ public class RegisterRequest {
     private String nickname;
     private String department;
     private int grade;
+
+    @JsonProperty("isPublic")
     private boolean isPublic;
 
 }
