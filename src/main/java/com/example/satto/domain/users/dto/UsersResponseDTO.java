@@ -1,5 +1,6 @@
 package com.example.satto.domain.users.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,6 +51,8 @@ public class UsersResponseDTO {
         private String password;
         private String email;
         private int grade;
+
+        @JsonProperty("isPublic")
         private boolean isPublic;
     }
 
