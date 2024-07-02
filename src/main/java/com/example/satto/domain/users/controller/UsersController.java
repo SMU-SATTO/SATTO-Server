@@ -78,7 +78,7 @@ public class UsersController {
     }
 
     // 유저 정보 반환
-    @Operation(summary = "유저 정보 반환", description = "유저의 이름, 닉네임, 학과, 학년, 공개/비공개")
+    @Operation(summary = "유저 정보 반환", description = "유저의 이름, 닉네임, 학과, 비번, 이메일, 학년, 공개/비공개")
     @GetMapping("/inform")
     public BaseResponse<?> userInformation2(@AuthenticationPrincipal Users user) {
         Long userId = user.getUserId();
