@@ -13,4 +13,6 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     boolean existsByUserAndEvent(Users user, Event event);
 
     List<Contest> findAllByCategory(String category);
+
+    void deleteAllByUser(Users user);
 }
