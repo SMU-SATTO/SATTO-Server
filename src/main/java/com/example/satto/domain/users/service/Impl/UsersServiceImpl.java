@@ -1,6 +1,7 @@
 package com.example.satto.domain.users.service.Impl;
 
 import com.example.satto.config.S3Config;
+import com.example.satto.domain.event.repository.ContestRepository;
 import com.example.satto.domain.follow.entity.Follow;
 import com.example.satto.domain.follow.repository.FollowRepository;
 import com.example.satto.domain.mail.dto.EmailRequestDTO;
@@ -34,6 +35,7 @@ public class UsersServiceImpl implements UsersService {
     private final PasswordEncoder passwordEncoder;
     private final TimeTableRepository timeTableRepository;
     private final TimeTableLectureRepository timeTableLectureRepository;
+    private final ContestRepository contestRepository;
     private final UuidRepository uuidRepository;
     private final S3Manager s3Manager;
     private final S3Config s3Config;
@@ -177,6 +179,7 @@ public class UsersServiceImpl implements UsersService {
         followRepository.deleteByFollowerId(user);
         timeTableLectureRepository.deleteAllByTimeTable_Users(user);
         timeTableRepository.deleteAllByUsers(user);
+        contestRepository.deleteAllByUser(user);
         usersRepository.deleteById(user.getUserId());
     }
 
