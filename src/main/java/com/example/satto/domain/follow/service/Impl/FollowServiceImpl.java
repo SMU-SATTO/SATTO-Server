@@ -26,6 +26,13 @@ public class FollowServiceImpl implements FollowService {
         if (isFollowRequestAlreadySent(studentId, followingId)) {
             return BaseResponse.onSuccess("이미 Follow 요청을 보냈습니다.");
         }
+
+
+        if (followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentId(studentId, followingId) &&
+                followRepository.existsByFollowerIdStudentIdAndFollowingIdStudentIdAndRequest(studentId, followingId, 2)) {
+            return BaseResponse.onFailure("이미 팔로우한 계정입니다.");
+        }
+
         // 팔로워 조회
         Users followerUser = findUserByStudentId(studentId);
         // 팔로잉 조회
