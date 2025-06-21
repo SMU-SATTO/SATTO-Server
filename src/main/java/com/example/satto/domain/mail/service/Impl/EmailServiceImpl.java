@@ -34,20 +34,6 @@ public class EmailServiceImpl implements EmailService {
                 + "<div style='font-size:130%'>CODE : <strong>" + code + "</strong></div>"
                 + "</div></div>";
 
-//        String msgg="";
-//        msgg+= "<div style='margin:15px;'>";
-//        msgg+= "<h1> SATTO </h1>";
-//        msgg+= "<br>";
-//        msgg+= "<p>아래 코드를 복사해 입력해주세요<p>";
-//        msgg+= "<br>";
-//        msgg+= "<p>감사합니다.<p>";
-//        msgg+= "<br>";
-//        msgg+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
-//        msgg+= "<h3 style='color:blue;'>이메일 인증 코드입니다.</h3>";
-//        msgg+= "<div style='font-size:130%'>";
-//        msgg+= "CODE : <strong>";
-//        msgg+= ePw+"</strong><div><br/> ";
-//        msgg+= "</div>";
         message.setText(html, "utf-8", "html");//내용
         message.setFrom(new InternetAddress("satto202409@gmail.com", "satto"));//보내는 사람
         return message;
@@ -116,20 +102,6 @@ public class EmailServiceImpl implements EmailService {
                 + "<div style='font-size:130%'>PASSWORD : <strong>" + tempPw + "</strong></div>"
                 + "</div></div>";
 
-//        String msgg="";
-//        msgg+= "<div style='margin:15px;'>";
-//        msgg+= "<h1> SATTO </h1>";
-//        msgg+= "<br>";
-//        msgg+= "<p>아래 임시 비밀번호를 복사해 입력해주세요<p>";
-//        msgg+= "<br>";
-//        msgg+= "<p>감사합니다.<p>";
-//        msgg+= "<br>";
-//        msgg+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
-//        msgg+= "<h3 style='color:blue;'>임시 비밀번호 코드입니다.</h3>";
-//        msgg+= "<div style='font-size:130%'>";
-//        msgg+= "CODE : <strong>";
-//        msgg+= findePw+"</strong><div><br/> ";
-//        msgg+= "</div>";
         message.setText(html, "utf-8", "html"); // 내용
         message.setFrom(new InternetAddress("satto202409@gmail.com", "satto"));//보내는 사람
         return message;
