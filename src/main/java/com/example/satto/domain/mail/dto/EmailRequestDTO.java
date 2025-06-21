@@ -6,6 +6,7 @@ public class EmailRequestDTO {
 
     @Getter
     public static class EmailAuthRequest {
+        private String email;
         private String certificationNum;
     }
 

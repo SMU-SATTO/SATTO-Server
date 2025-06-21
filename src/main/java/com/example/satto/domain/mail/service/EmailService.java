@@ -6,4 +6,6 @@ public interface EmailService {
     String sendSimpleMessage(String to)throws Exception;
 
     String sendFindPwMessage(String toEmail) throws Exception;
+
+    boolean verifyCode(String email, String inputCode);
 }
