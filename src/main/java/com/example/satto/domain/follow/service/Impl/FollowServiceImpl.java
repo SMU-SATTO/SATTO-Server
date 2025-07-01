@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.*;
 
 @Service
@@ -46,7 +47,7 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public Map<String, String> followRequestList(String studentId) {
         // 팔로우 요청을 보낸 사람들의 목록을 가져온다.
-        List<Follow> followerRequests = followRepository.findByFollowingIdStudentIdAndRequest(studentId, 1);
+        List<Follow> followerRequests = followRepository.findFollowRequestWithUserByFollowingId(studentId, 1);
         Map<String, String> followRequesters = new HashMap<>();
 
         for (Follow follow : followerRequests) {
